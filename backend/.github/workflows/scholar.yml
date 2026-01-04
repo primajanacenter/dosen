@@ -1,0 +1,28 @@
+name: Ambil Publikasi Scholar
+
+on:
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install library
+        run: pip install scholarly
+
+      - name: Ambil publikasi
+        run: python backend/scholar_scraper.py "PASTE_LINK_GOOGLE_SCHOLAR_ANDA_DI_SINI"
+
+      - name: Simpan hasil
+        run: |
+          git config --global user.email "bot@primajana.id"
+          git config --global user.name "Primajana Bot"
+          git add publications.json
+          git commit -m "Update publikasi"
+          git push
