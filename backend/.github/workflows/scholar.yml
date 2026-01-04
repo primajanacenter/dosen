@@ -17,7 +17,7 @@ jobs:
         run: pip install scholarly
 
       - name: Ambil publikasi
-        run: python backend/scholar_scraper.py "PASTE_LINK_GOOGLE_SCHOLAR_ANDA_DI_SINI"
+        run: python backend/scholar_scraper.py "https://scholar.google.com/citations?user=Jl9-RAEAAAAJ&hl=en&oi=ao"
 
       - name: Simpan hasil
         run: |
