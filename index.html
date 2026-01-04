@@ -13,7 +13,7 @@
 
   <h1 class="text-2xl font-bold mb-1">Primajana</h1>
   <p class="mb-6 text-gray-600">
-    Masukkan ORCID atau nama Anda. Semua data diambil dari sumber publik.
+    Masukkan ORCID atau Nama Anda. Semua data diambil dari sumber publik.
   </p>
 
   <input x-model="name"
@@ -22,7 +22,7 @@
 
   <input x-model="orcid"
          class="w-full mb-4 p-2 border rounded"
-         placeholder="ORCID (opsional, sangat disarankan)">
+         placeholder="ORCID (mis: 0000-0002-1825-0097)">
 
   <button @click="analyze()"
           class="w-full bg-blue-600 text-white p-2 rounded">
@@ -33,21 +33,21 @@
     Mengambil data publikasi...
   </div>
 
-  <!-- HASIL PUBLIKASI -->
   <template x-for="p in publications" :key="p.title">
     <div class="border-b py-2 mt-3">
       <strong x-text="p.title"></strong>
-      <div class="text-sm text-gray-500"
-           x-text="p.year"></div>
+      <div class="text-sm text-gray-500" x-text="p.year"></div>
     </div>
   </template>
 
-  <!-- RINGKASAN -->
   <div x-show="publications.length" class="mt-6">
-    <h3 class="font-bold mb-2">Ringkasan</h3>
+    <h3 class="font-bold mb-2">Ringkasan Karier</h3>
     <p>Total Publikasi: <strong x-text="publications.length"></strong></p>
     <p class="mt-2 text-blue-600 font-bold">
       Level Karier Saat Ini: <span x-text="level"></span>
+    </p>
+    <p class="mt-1 text-red-600 font-bold">
+      Status Risiko: <span x-text="risk"></span>
     </p>
   </div>
 
@@ -61,11 +61,13 @@ function careerApp(){
     publications:[],
     loading:false,
     level:'',
+    risk:'',
 
     async analyze(){
       this.loading=true;
       this.publications=[];
       this.level='';
+      this.risk='';
 
       if(this.orcid){
         await this.fetchFromORCID();
@@ -84,19 +86,25 @@ function careerApp(){
       else this.level = 'Menuju Profesor';
     },
 
+    calculateRisk(){
+      const n = this.publications.length;
+      if(n < 2) this.risk = 'TINGGI – Risiko kehilangan tunjangan';
+      else if(n < 5) this.risk = 'SEDANG – Perlu percepatan publikasi';
+      else this.risk = 'RENDAH – Aman';
+    },
+
     async fetchFromORCID(){
       try{
         const res = await fetch(`https://pub.orcid.org/v3.0/${this.orcid}/works`,{
           headers:{'Accept':'application/json'}
         });
         const data = await res.json();
-
         this.publications = data.group.map(g=>({
           title: g['work-summary'][0].title.title.value,
           year: g['work-summary'][0]['publication-date']?.year?.value || ''
         }));
-
         this.calculateLevel();
+        this.calculateRisk();
       }catch(e){
         alert('Gagal mengambil data ORCID.');
       }
@@ -107,18 +115,16 @@ function careerApp(){
         alert('Masukkan nama atau ORCID.');
         return;
       }
-
       try{
         const url = `https://api.openalex.org/works?filter=authorships.author.display_name.search:${encodeURIComponent(this.name)}&per-page=20`;
         const res = await fetch(url);
         const data = await res.json();
-
         this.publications = data.results.map(w=>({
           title:w.title,
           year:w.publication_year
         }));
-
         this.calculateLevel();
+        this.calculateRisk();
       }catch(e){
         alert('Gagal mengambil data OpenAlex.');
       }
