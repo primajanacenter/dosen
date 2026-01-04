@@ -13,7 +13,7 @@
 
   <h1 class="text-2xl font-bold mb-1">Primajana</h1>
   <p class="mb-6 text-gray-600">
-    Tempelkan ORCID atau nama Anda. Semua data diambil dari sumber publik.
+    Masukkan ORCID atau nama Anda. Semua data diambil dari sumber publik.
   </p>
 
   <input x-model="name"
@@ -22,7 +22,7 @@
 
   <input x-model="orcid"
          class="w-full mb-4 p-2 border rounded"
-         placeholder="ORCID (mis: 0000-0002-1825-0097)">
+         placeholder="ORCID (opsional, sangat disarankan)">
 
   <button @click="analyze()"
           class="w-full bg-blue-600 text-white p-2 rounded">
@@ -33,6 +33,7 @@
     Mengambil data publikasi...
   </div>
 
+  <!-- HASIL PUBLIKASI -->
   <template x-for="p in publications" :key="p.title">
     <div class="border-b py-2 mt-3">
       <strong x-text="p.title"></strong>
@@ -41,9 +42,13 @@
     </div>
   </template>
 
+  <!-- RINGKASAN -->
   <div x-show="publications.length" class="mt-6">
     <h3 class="font-bold mb-2">Ringkasan</h3>
     <p>Total Publikasi: <strong x-text="publications.length"></strong></p>
+    <p class="mt-2 text-blue-600 font-bold">
+      Level Karier Saat Ini: <span x-text="level"></span>
+    </p>
   </div>
 
 </div>
@@ -55,10 +60,12 @@ function careerApp(){
     orcid:'',
     publications:[],
     loading:false,
+    level:'',
 
     async analyze(){
       this.loading=true;
       this.publications=[];
+      this.level='';
 
       if(this.orcid){
         await this.fetchFromORCID();
@@ -67,6 +74,14 @@ function careerApp(){
       }
 
       this.loading=false;
+    },
+
+    calculateLevel(){
+      const n = this.publications.length;
+      if(n < 3) this.level = 'Asisten Ahli';
+      else if(n < 7) this.level = 'Lektor';
+      else if(n < 15) this.level = 'Lektor Kepala';
+      else this.level = 'Menuju Profesor';
     },
 
     async fetchFromORCID(){
@@ -80,6 +95,8 @@ function careerApp(){
           title: g['work-summary'][0].title.title.value,
           year: g['work-summary'][0]['publication-date']?.year?.value || ''
         }));
+
+        this.calculateLevel();
       }catch(e){
         alert('Gagal mengambil data ORCID.');
       }
@@ -100,6 +117,8 @@ function careerApp(){
           title:w.title,
           year:w.publication_year
         }));
+
+        this.calculateLevel();
       }catch(e){
         alert('Gagal mengambil data OpenAlex.');
       }
