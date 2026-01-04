@@ -13,16 +13,16 @@
 
   <h1 class="text-2xl font-bold mb-1">Primajana</h1>
   <p class="mb-6 text-gray-600">
-    Masukkan nama Anda, Primajana akan menarik publikasi publik secara otomatis.
+    Tempelkan ORCID atau nama Anda. Semua data diambil dari sumber publik.
   </p>
 
   <input x-model="name"
          class="w-full mb-3 p-2 border rounded"
-         placeholder="Nama Lengkap (sesuai publikasi)">
+         placeholder="Nama Lengkap">
 
-  <input x-model="university"
+  <input x-model="orcid"
          class="w-full mb-4 p-2 border rounded"
-         placeholder="Perguruan Tinggi">
+         placeholder="ORCID (mis: 0000-0002-1825-0097)">
 
   <button @click="analyze()"
           class="w-full bg-blue-600 text-white p-2 rounded">
@@ -30,72 +30,79 @@
   </button>
 
   <div x-show="loading" class="mt-4 text-blue-600">
-    Mengambil data publikasi dari OpenAlex...
+    Mengambil data publikasi...
   </div>
 
-  <!-- HASIL PUBLIKASI -->
-  <template x-for="p in publications" :key="p.id">
+  <template x-for="p in publications" :key="p.title">
     <div class="border-b py-2 mt-3">
       <strong x-text="p.title"></strong>
       <div class="text-sm text-gray-500"
-           x-text="p.year + ' | Sitasi: ' + p.citations"></div>
+           x-text="p.year"></div>
     </div>
   </template>
 
-  <!-- RINGKASAN -->
   <div x-show="publications.length" class="mt-6">
-    <h3 class="font-bold mb-2">Ringkasan Produktivitas</h3>
+    <h3 class="font-bold mb-2">Ringkasan</h3>
     <p>Total Publikasi: <strong x-text="publications.length"></strong></p>
-    <p>Total Sitasi: <strong x-text="totalCitations"></strong></p>
-    <p class="mt-2 text-green-600 font-bold">
-      Skor Produktivitas: <span x-text="score"></span>
-    </p>
   </div>
 
 </div>
 
 <script>
-function careerApp() {
-  return {
-    name: '',
-    university: '',
-    publications: [],
-    totalCitations: 0,
-    score: 0,
-    loading: false,
+function careerApp(){
+  return{
+    name:'',
+    orcid:'',
+    publications:[],
+    loading:false,
 
-    async analyze() {
-      if (!this.name) {
-        alert('Masukkan nama lengkap terlebih dahulu.');
+    async analyze(){
+      this.loading=true;
+      this.publications=[];
+
+      if(this.orcid){
+        await this.fetchFromORCID();
+      }else{
+        await this.fetchFromOpenAlex();
+      }
+
+      this.loading=false;
+    },
+
+    async fetchFromORCID(){
+      try{
+        const res = await fetch(`https://pub.orcid.org/v3.0/${this.orcid}/works`,{
+          headers:{'Accept':'application/json'}
+        });
+        const data = await res.json();
+
+        this.publications = data.group.map(g=>({
+          title: g['work-summary'][0].title.title.value,
+          year: g['work-summary'][0]['publication-date']?.year?.value || ''
+        }));
+      }catch(e){
+        alert('Gagal mengambil data ORCID.');
+      }
+    },
+
+    async fetchFromOpenAlex(){
+      if(!this.name){
+        alert('Masukkan nama atau ORCID.');
         return;
       }
 
-      this.loading = true;
-      this.publications = [];
-      this.totalCitations = 0;
-      this.score = 0;
-
-      const url = `https://api.openalex.org/works?filter=authorships.author.display_name.search:${encodeURIComponent(this.name)}&per-page=20`;
-
-      try {
+      try{
+        const url = `https://api.openalex.org/works?filter=authorships.author.display_name.search:${encodeURIComponent(this.name)}&per-page=20`;
         const res = await fetch(url);
         const data = await res.json();
 
-        this.publications = data.results.map(w => ({
-          id: w.id,
-          title: w.title,
-          year: w.publication_year,
-          citations: w.cited_by_count
+        this.publications = data.results.map(w=>({
+          title:w.title,
+          year:w.publication_year
         }));
-
-        this.totalCitations = this.publications.reduce((a,b)=>a+b.citations,0);
-        this.score = Math.round(this.totalCitations / Math.max(this.publications.length,1) * 10);
-
-      } catch(e) {
-        alert('Gagal mengambil data. Periksa koneksi atau coba lagi.');
+      }catch(e){
+        alert('Gagal mengambil data OpenAlex.');
       }
-
-      this.loading = false;
     }
   }
 }
