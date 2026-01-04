@@ -11,15 +11,17 @@
 <div class="max-w-xl mx-auto p-6 mt-10 bg-white rounded-xl shadow"
      x-data="careerApp()">
 
-  <h1 class="text-2xl font-bold mb-2">Primajana</h1>
+  <h1 class="text-2xl font-bold mb-1">Primajana</h1>
   <p class="mb-6 text-gray-600">
-    Tempelkan data publik Anda. Kami bantu arahkan karier Anda.
+    Masukkan nama Anda, Primajana akan menarik publikasi publik secara otomatis.
   </p>
 
-  <input x-model="name" class="w-full mb-3 p-2 border rounded"
-         placeholder="Nama Lengkap">
+  <input x-model="name"
+         class="w-full mb-3 p-2 border rounded"
+         placeholder="Nama Lengkap (sesuai publikasi)">
 
-  <input x-model="university" class="w-full mb-3 p-2 border rounded"
+  <input x-model="university"
+         class="w-full mb-4 p-2 border rounded"
          placeholder="Perguruan Tinggi">
 
   <button @click="analyze()"
@@ -28,20 +30,26 @@
   </button>
 
   <div x-show="loading" class="mt-4 text-blue-600">
-    Mengambil data publikasi...
+    Mengambil data publikasi dari OpenAlex...
   </div>
 
-  <template x-for="p in publications" :key="p.title">
-    <div class="border-b py-2 mt-4">
+  <!-- HASIL PUBLIKASI -->
+  <template x-for="p in publications" :key="p.id">
+    <div class="border-b py-2 mt-3">
       <strong x-text="p.title"></strong>
       <div class="text-sm text-gray-500"
            x-text="p.year + ' | Sitasi: ' + p.citations"></div>
     </div>
   </template>
 
-  <div x-show="score">
-    <h3 class="mt-6 font-bold">Skor Produktivitas</h3>
-    <div class="text-3xl text-green-600" x-text="score"></div>
+  <!-- RINGKASAN -->
+  <div x-show="publications.length" class="mt-6">
+    <h3 class="font-bold mb-2">Ringkasan Produktivitas</h3>
+    <p>Total Publikasi: <strong x-text="publications.length"></strong></p>
+    <p>Total Sitasi: <strong x-text="totalCitations"></strong></p>
+    <p class="mt-2 text-green-600 font-bold">
+      Skor Produktivitas: <span x-text="score"></span>
+    </p>
   </div>
 
 </div>
@@ -52,28 +60,40 @@ function careerApp() {
     name: '',
     university: '',
     publications: [],
+    totalCitations: 0,
+    score: 0,
     loading: false,
-    score: null,
 
     async analyze() {
       if (!this.name) {
-        alert('Masukkan nama terlebih dahulu');
+        alert('Masukkan nama lengkap terlebih dahulu.');
         return;
       }
 
       this.loading = true;
+      this.publications = [];
+      this.totalCitations = 0;
+      this.score = 0;
 
-      const url = `https://api.openalex.org/works?filter=authorships.author.display_name.search:${encodeURIComponent(this.name)}&per-page=10`;
-      const res = await fetch(url);
-      const data = await res.json();
+      const url = `https://api.openalex.org/works?filter=authorships.author.display_name.search:${encodeURIComponent(this.name)}&per-page=20`;
 
-      this.publications = data.results.map(w => ({
-        title: w.title,
-        year: w.publication_year,
-        citations: w.cited_by_count
-      }));
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
 
-      this.score = this.publications.reduce((a,b)=>a+b.citations,0);
+        this.publications = data.results.map(w => ({
+          id: w.id,
+          title: w.title,
+          year: w.publication_year,
+          citations: w.cited_by_count
+        }));
+
+        this.totalCitations = this.publications.reduce((a,b)=>a+b.citations,0);
+        this.score = Math.round(this.totalCitations / Math.max(this.publications.length,1) * 10);
+
+      } catch(e) {
+        alert('Gagal mengambil data. Periksa koneksi atau coba lagi.');
+      }
 
       this.loading = false;
     }
