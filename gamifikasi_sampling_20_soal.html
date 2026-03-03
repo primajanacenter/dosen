@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gamifikasi Sampling - 20 Soal</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#ffffff;
+    text-align:center;
+    padding:20px;
+}
+
+h1{color:#2c3e50;}
+
+.quiz-container{
+    max-width:900px;
+    margin:auto;
+}
+
+.number-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:10px;
+    margin:20px 0;
+}
+
+.number-btn{
+    padding:14px;
+    border:none;
+    border-radius:8px;
+    background:#3498db;
+    color:white;
+    font-size:15px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.number-btn:hover{background:#2980b9;}
+
+.number-btn.answered{
+    background:#95a5a6;
+    cursor:not-allowed;
+}
+
+.option{
+    display:block;
+    margin:8px 0;
+    padding:10px;
+    border:1px solid #ccc;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.option:hover{background:#f2f2f2;}
+
+.correct{background:#2ecc71;color:white;}
+.wrong{background:#e74c3c;color:white;}
+
+.progress-bar{
+    width:100%;
+    background:#eee;
+    height:15px;
+    border-radius:10px;
+    margin:15px 0;
+    overflow:hidden;
+}
+
+.progress{
+    height:100%;
+    width:0%;
+    background:#27ae60;
+}
+
+.footer{
+    margin-top:40px;
+    font-size:13px;
+    color:#555;
+    border-top:1px solid #ddd;
+    padding-top:15px;
+}
+</style>
+</head>
+<body>
+
+<h1>🎯 Gamifikasi Sampling - 20 Pertanyaan</h1>
+
+<div class="quiz-container">
+
+<div class="number-grid" id="numberGrid"></div>
+
+<div id="questionBox"></div>
+<div id="optionsBox"></div>
+
+<div class="progress-bar">
+    <div class="progress" id="progress"></div>
+</div>
+
+<div id="scoreBox">Skor: 0</div>
+
+</div>
+
+<div class="footer">
+© 2026 Ngakan Putu Anom Harjana, S.KM., M.A.<br>
+Email: anomharjana@unud.ac.id
+</div>
+
+<script>
+
+/* ===== BANK 20 SOAL ===== */
+const questionBank = [
+
+/* 10 SRS */
+{q:"Dalam SRS, setiap anggota populasi memiliki...",o:["Peluang berbeda","Peluang sama","Bergantung urutan","Dipilih sistematis"],a:1},
+{q:"Metode undian termasuk teknik...",o:["Systematic","Cluster","Simple Random","Stratified"],a:2},
+{q:"Jika N=100 dan n=10, peluang individu terpilih adalah...",o:["0.1","0.01","10","100"],a:0},
+{q:"SRS memerlukan...",o:["Interval k","Daftar populasi lengkap","Strata","Cluster"],a:1},
+{q:"Risiko bias pada SRS adalah...",o:["Tinggi","Sedang","Rendah","Sangat tinggi"],a:2},
+{q:"SRS termasuk probability sampling karena...",o:["Tidak acak","Peluang sama","Kemudahan","Strata"],a:1},
+{q:"Pemilihan dilakukan secara...",o:["Urut","Loncat tetap","Acak murni","Kelompok"],a:2},
+{q:"Tool untuk SRS adalah...",o:["Excel RAND()","SPSS","R","Semua benar"],a:3},
+{q:"Jumlah sampel tidak boleh...",o:["Lebih kecil dari N","Lebih besar dari N","Sama dengan N","0"],a:1},
+{q:"SRS cocok untuk populasi...",o:["Homogen","Periodik","Tanpa daftar","Cluster"],a:0},
+
+/* 10 SYSTEMATIC */
+{q:"Rumus interval systematic sampling adalah...",o:["n/N","N/n","Nxn","n-N"],a:1},
+{q:"Langkah pertama systematic adalah...",o:["Acak semua","Hitung k","Strata","Undian"],a:1},
+{q:"Jika N=200 dan n=40, k adalah...",o:["4","5","10","20"],a:1},
+{q:"Titik awal systematic dipilih secara...",o:["Tetap","Acak","Cluster","Strata"],a:1},
+{q:"Systematic cocok untuk populasi...",o:["Besar & terurut","Tanpa daftar","Ekstrem heterogen","Cluster"],a:0},
+{q:"Risiko systematic adalah...",o:["Bias periodik","Tidak efisien","Tidak acak","Tanpa risiko"],a:0},
+{q:"Jika k=5 dan start=3, berikutnya adalah...",o:["6","7","8","9"],a:2},
+{q:"Systematic termasuk probability sampling karena...",o:["Tidak acak","Peluang terukur","Kemudahan","Strata"],a:1},
+{q:"Jika ada pola periodik, systematic bisa...",o:["Akurat","Bias","Netral","Acak"],a:1},
+{q:"Setelah titik awal, ambil...",o:["Semua","Setiap elemen ke-k","Acak ulang","Cluster"],a:1}
+
+];
+
+/* ===== LOGIKA GAME ===== */
+
+let selectedQuestions = questionBank.sort(()=>Math.random()-0.5);
+let answered = 0;
+let score = 0;
+
+function initNumbers(){
+    let grid = document.getElementById("numberGrid");
+    for(let i=0;i<20;i++){
+        let btn=document.createElement("button");
+        btn.className="number-btn";
+        btn.innerText=i+1;
+        btn.onclick=()=>loadQuestion(i,btn);
+        grid.appendChild(btn);
+    }
+}
+
+function loadQuestion(index,button){
+    if(button.classList.contains("answered")) return;
+
+    let q = selectedQuestions[index];
+
+    document.getElementById("questionBox").innerHTML=
+        "<h3>Pertanyaan "+(index+1)+"</h3>"+q.q;
+
+    let optionsHTML="";
+    q.o.forEach((opt,i)=>{
+        optionsHTML+=`<div class="option" onclick="checkAnswer(${index},${i},this)">${opt}</div>`;
+    });
+
+    document.getElementById("optionsBox").innerHTML=optionsHTML;
+}
+
+function checkAnswer(qIndex,optIndex,element){
+    let correct = selectedQuestions[qIndex].a;
+    let options=document.querySelectorAll(".option");
+
+    options.forEach(o=>o.style.pointerEvents="none");
+
+    if(optIndex===correct){
+        element.classList.add("correct");
+        score++;
+    } else {
+        element.classList.add("wrong");
+        options[correct].classList.add("correct");
+    }
+
+    document.getElementsByClassName("number-btn")[qIndex]
+        .classList.add("answered");
+
+    answered++;
+    document.getElementById("scoreBox").innerHTML="Skor: "+score;
+    updateProgress();
+
+    if(answered===20){
+        setTimeout(showResult,800);
+    }
+}
+
+function updateProgress(){
+    document.getElementById("progress").style.width=
+        (answered/20*100)+"%";
+}
+
+function showResult(){
+    let percent=(score/20*100).toFixed(0);
+    let message= percent>=80 ? "🎉 LULUS (Excellent)" : "📘 Perlu Latihan Lagi";
+
+    document.getElementById("questionBox").innerHTML=
+        "<h2>Hasil Akhir</h2>"+
+        "<p>Skor: "+score+" / 20 ("+percent+"%)</p>"+
+        "<h3>"+message+"</h3>";
+
+    document.getElementById("optionsBox").innerHTML="";
+}
+
+initNumbers();
+
+</script>
+
+</body>
+</html>
