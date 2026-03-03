@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gamifikasi Animatif - Simple Random Sampling</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#ffffff;
+    text-align:center;
+    margin:0;
+    padding:20px;
+}
+
+h1{color:#2c3e50;margin-bottom:5px;}
+
+.controls{margin:15px;}
+
+input{
+    padding:6px;
+    width:90px;
+    text-align:center;
+}
+
+button{
+    padding:8px 14px;
+    margin:5px;
+    border:none;
+    border-radius:5px;
+    background:#3498db;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:hover{background:#2980b9;}
+
+.population{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(50px,1fr));
+    gap:6px;
+    max-width:800px;
+    margin:20px auto;
+}
+
+.member{
+    padding:10px;
+    background:#f2f2f2;
+    border-radius:5px;
+    transition:0.3s;
+}
+
+.selected{
+    background:#2ecc71;
+    color:white;
+    transform:scale(1.1);
+}
+
+.highlight{
+    background:#f39c12;
+    color:white;
+}
+
+.formula, .steps{
+    margin-top:15px;
+    opacity:0;
+    transition:opacity 1s ease;
+}
+
+.show{
+    opacity:1;
+}
+
+.progress-bar{
+    width:80%;
+    background:#eee;
+    margin:15px auto;
+    height:20px;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.progress{
+    height:100%;
+    width:0%;
+    background:#27ae60;
+    transition:width 0.3s ease;
+}
+
+.stats{
+    margin-top:15px;
+    font-weight:bold;
+}
+
+.footer{
+    margin-top:40px;
+    padding-top:15px;
+    font-size:13px;
+    color:#555;
+    border-top:1px solid #ddd;
+}
+</style>
+</head>
+<body>
+
+<h1>🎯 Simulasi Animatif Simple Random Sampling</h1>
+
+<div class="controls">
+    Populasi (N):
+    <input type="number" id="populationSize" value="30" min="1">
+    Sampel (n):
+    <input type="number" id="sampleSize" value="5" min="1">
+    <br>
+    <button onclick="generatePopulation()">Generate</button>
+    <button onclick="startSampling()">Mulai Animasi</button>
+</div>
+
+<div class="formula" id="formulaBox">
+    <strong>Formula Konsep:</strong><br>
+    Setiap elemen memiliki peluang yang sama:<br>
+    <em>P = n / N</em>
+</div>
+
+<div class="steps" id="stepsBox">
+    <strong>Langkah-langkah:</strong><br>
+    1️⃣ Tentukan N dan n<br>
+    2️⃣ Nomori seluruh populasi<br>
+    3️⃣ Acak seluruh elemen<br>
+    4️⃣ Pilih n pertama dari hasil acak
+</div>
+
+<div class="progress-bar">
+    <div class="progress" id="progress"></div>
+</div>
+
+<div class="population" id="populationContainer"></div>
+
+<div class="stats" id="stats"></div>
+
+<div class="footer">
+    © 2026 Ngakan Putu Anom Harjana, S.KM., M.A.<br>
+    Email: anomharjana@unud.ac.id
+</div>
+
+<script>
+
+let population=[];
+let selected=[];
+
+function generatePopulation(){
+    const N=parseInt(document.getElementById("populationSize").value);
+    const container=document.getElementById("populationContainer");
+    container.innerHTML="";
+    population=[];
+    selected=[];
+    document.getElementById("stats").innerHTML="";
+    document.getElementById("progress").style.width="0%";
+
+    for(let i=1;i<=N;i++){
+        population.push(i);
+        let div=document.createElement("div");
+        div.className="member";
+        div.id="member-"+i;
+        div.innerText=i;
+        container.appendChild(div);
+    }
+
+    document.getElementById("formulaBox").classList.add("show");
+    document.getElementById("stepsBox").classList.add("show");
+}
+
+async function startSampling(){
+    const N=parseInt(document.getElementById("populationSize").value);
+    const n=parseInt(document.getElementById("sampleSize").value);
+
+    if(n>N){ alert("n tidak boleh lebih besar dari N"); return;}
+
+    selected=[];
+    let shuffled=[...population].sort(()=>Math.random()-0.5);
+
+    for(let i=0;i<n;i++){
+        await animatePick(shuffled[i],i,n);
+        selected.push(shuffled[i]);
+    }
+
+    showStats(N,n);
+}
+
+function animatePick(id,index,total){
+    return new Promise(resolve=>{
+        let element=document.getElementById("member-"+id);
+        element.classList.add("highlight");
+
+        setTimeout(()=>{
+            element.classList.remove("highlight");
+            element.classList.add("selected");
+            updateProgress((index+1)/total*100);
+            resolve();
+        },600);
+    });
+}
+
+function updateProgress(percent){
+    document.getElementById("progress").style.width=percent+"%";
+}
+
+function showStats(N,n){
+    document.getElementById("stats").innerHTML=
+    `Total Populasi: ${N} | Total Sampel: ${n} <br>
+     Probabilitas tiap elemen: ${n}/${N} = ${(n/N).toFixed(2)}`;
+}
+
+</script>
+
+</body>
+</html>
