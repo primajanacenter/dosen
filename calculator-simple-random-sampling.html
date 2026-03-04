@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kalkulator Besar Sampel SRS</title>
+<title>Kalkulator Besar Sampel SRS - Edukatif</title>
 
 <style>
 body{
@@ -12,25 +12,20 @@ body{
     margin:0;
     padding:0;
 }
-
 .container{
-    max-width:700px;
+    max-width:800px;
     margin:40px auto;
     background:white;
     padding:30px;
     border-radius:12px;
     box-shadow:0 5px 20px rgba(0,0,0,0.1);
 }
-
 h2{
     text-align:center;
-    margin-bottom:20px;
 }
-
 label{
     font-weight:bold;
 }
-
 input, select{
     width:100%;
     padding:8px;
@@ -39,7 +34,6 @@ input, select{
     border-radius:6px;
     border:1px solid #ccc;
 }
-
 button{
     width:100%;
     padding:10px;
@@ -50,19 +44,22 @@ button{
     font-size:16px;
     cursor:pointer;
 }
-
 button:hover{
     background:#1a68d1;
 }
-
 .result{
     margin-top:20px;
     padding:15px;
     background:#eef4ff;
     border-radius:8px;
-    font-size:16px;
 }
-
+.formula-box{
+    background:#f9fafc;
+    padding:15px;
+    border-radius:8px;
+    margin-bottom:20px;
+    font-size:14px;
+}
 .footer{
     text-align:center;
     margin-top:40px;
@@ -75,97 +72,141 @@ button:hover{
 <body>
 
 <div class="container">
-    <h2>Kalkulator Besar Sampel<br>Simple Random Sampling (SRS)</h2>
+<h2>Kalkulator Besar Sampel<br>Simple Random Sampling (SRS)</h2>
 
-    <label>Jenis Estimasi:</label>
-    <select id="type" onchange="toggleInput()">
-        <option value="proporsi">Proporsi</option>
-        <option value="mean">Mean (Rata-rata)</option>
-    </select>
+<div class="formula-box" id="formulaBox">
+<b>Rumus Proporsi:</b><br>
+n = (Z² × p × (1 − p)) / d²
+<br><br>
+<b>Keterangan:</b><br>
+Z = Nilai Z (misal 1.96 untuk 95%)<br>
+p = Estimasi proporsi<br>
+d = Margin of error
+</div>
 
-    <label>Nilai Z (contoh 1.96 untuk 95% CI):</label>
-    <input type="number" id="z" value="1.96" step="0.01">
+<label>Jenis Estimasi:</label>
+<select id="type" onchange="toggleInput()">
+<option value="proporsi">Proporsi</option>
+<option value="mean">Mean (Rata-rata)</option>
+</select>
 
-    <div id="proporsiInput">
-        <label>Estimasi Proporsi (p):</label>
-        <input type="number" id="p" value="0.5" step="0.01">
-    </div>
+<label>Nilai Z (contoh 1.96 untuk 95% CI):</label>
+<input type="number" id="z" value="1.96" step="0.01">
 
-    <div id="meanInput" style="display:none;">
-        <label>Standar Deviasi (S):</label>
-        <input type="number" id="s" step="0.01">
-    </div>
+<div id="proporsiInput">
+<label>Estimasi Proporsi (p):</label>
+<input type="number" id="p" value="0.5" step="0.01">
+</div>
 
-    <label>Margin of Error (d):</label>
-    <input type="number" id="d" value="0.05" step="0.01">
+<div id="meanInput" style="display:none;">
+<label>Standar Deviasi (S):</label>
+<input type="number" id="s" step="0.01">
+</div>
 
-    <label>Ukuran Populasi (opsional, isi jika terbatas):</label>
-    <input type="number" id="N">
+<label>Margin of Error (d):</label>
+<input type="number" id="d" value="0.05" step="0.01">
 
-    <label>Tambahan Non-Response (%):</label>
-    <input type="number" id="nr" value="0">
+<label>Ukuran Populasi (opsional):</label>
+<input type="number" id="N">
 
-    <button onclick="hitung()">Hitung Besar Sampel</button>
+<label>Tambahan Non-Response (%):</label>
+<input type="number" id="nr" value="0">
 
-    <div class="result" id="hasil" style="display:none;"></div>
+<button onclick="hitung()">Hitung Besar Sampel</button>
+
+<div class="result" id="hasil" style="display:none;"></div>
+
 </div>
 
 <div class="footer">
-    © Ngakan Putu Anom Harjana, S.KM., M.A.<br>
-    anomharjana@unud.ac.id
+© Ngakan Putu Anom Harjana, S.KM., M.A.<br>
+anomharjana@unud.ac.id
 </div>
 
 <script>
 
 function toggleInput(){
-    let type = document.getElementById("type").value;
-    if(type === "proporsi"){
-        document.getElementById("proporsiInput").style.display="block";
-        document.getElementById("meanInput").style.display="none";
-    }else{
-        document.getElementById("proporsiInput").style.display="none";
-        document.getElementById("meanInput").style.display="block";
-    }
+let type = document.getElementById("type").value;
+let formulaBox = document.getElementById("formulaBox");
+
+if(type === "proporsi"){
+document.getElementById("proporsiInput").style.display="block";
+document.getElementById("meanInput").style.display="none";
+
+formulaBox.innerHTML = `
+<b>Rumus Proporsi:</b><br>
+n = (Z² × p × (1 − p)) / d²
+<br><br>
+<b>Keterangan:</b><br>
+Z = Nilai Z<br>
+p = Estimasi proporsi<br>
+d = Margin of error
+`;
+
+}else{
+
+document.getElementById("proporsiInput").style.display="none";
+document.getElementById("meanInput").style.display="block";
+
+formulaBox.innerHTML = `
+<b>Rumus Mean:</b><br>
+n = (Z² × S²) / d²
+<br><br>
+<b>Keterangan:</b><br>
+Z = Nilai Z<br>
+S = Standar deviasi<br>
+d = Margin of error
+`;
+}
 }
 
 function hitung(){
 
-    let type = document.getElementById("type").value;
-    let z = parseFloat(document.getElementById("z").value);
-    let d = parseFloat(document.getElementById("d").value);
-    let N = parseFloat(document.getElementById("N").value);
-    let nr = parseFloat(document.getElementById("nr").value);
+let type = document.getElementById("type").value;
+let z = parseFloat(document.getElementById("z").value);
+let d = parseFloat(document.getElementById("d").value);
+let N = parseFloat(document.getElementById("N").value);
+let nr = parseFloat(document.getElementById("nr").value);
 
-    let n;
+let n, contoh;
 
-    if(type === "proporsi"){
-        let p = parseFloat(document.getElementById("p").value);
-        n = (Math.pow(z,2) * p * (1-p)) / Math.pow(d,2);
-    }else{
-        let s = parseFloat(document.getElementById("s").value);
-        n = (Math.pow(z,2) * Math.pow(s,2)) / Math.pow(d,2);
-    }
+if(type === "proporsi"){
+let p = parseFloat(document.getElementById("p").value);
+n = (Math.pow(z,2) * p * (1-p)) / Math.pow(d,2);
+contoh = `Contoh:
+Z = ${z}, p = ${p}, d = ${d}
+n = (${z}² × ${p} × ${1-p}) / ${d}²`;
+}else{
+let s = parseFloat(document.getElementById("s").value);
+n = (Math.pow(z,2) * Math.pow(s,2)) / Math.pow(d,2);
+contoh = `Contoh:
+Z = ${z}, S = ${s}, d = ${d}
+n = (${z}² × ${s}²) / ${d}²`;
+}
 
-    let n_awal = n;
+let n_awal = n;
 
-    // Finite Population Correction
-    if(!isNaN(N) && N > 0){
-        n = n / (1 + ((n - 1) / N));
-    }
+// FPC
+if(!isNaN(N) && N > 0){
+n = n / (1 + ((n - 1) / N));
+}
 
-    // Tambah Non Response
-    if(!isNaN(nr) && nr > 0){
-        n = n / (1 - (nr/100));
-    }
+// Non-response
+if(!isNaN(nr) && nr > 0){
+n = n / (1 - (nr/100));
+}
 
-    n = Math.ceil(n);
+n = Math.ceil(n);
 
-    document.getElementById("hasil").style.display="block";
-    document.getElementById("hasil").innerHTML = `
-        <strong>Hasil Perhitungan:</strong><br><br>
-        n (awal) = ${n_awal.toFixed(2)}<br>
-        n (setelah koreksi & non-response) = <strong>${n}</strong> responden
-    `;
+document.getElementById("hasil").style.display="block";
+document.getElementById("hasil").innerHTML = `
+<b>Hasil Perhitungan:</b><br><br>
+n (awal) = ${n_awal.toFixed(2)}<br>
+n (final) = <b>${n}</b> responden
+<br><br>
+<b>Ilustrasi Perhitungan:</b><br>
+${contoh}
+`;
 }
 
 </script>
