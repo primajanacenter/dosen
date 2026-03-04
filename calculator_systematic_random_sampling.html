@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kalkulator Systematic Random Sampling</title>
+<title>Kalkulator Besar Sampel Systematic Random Sampling</title>
 
 <style>
 body{
@@ -12,25 +12,20 @@ body{
     margin:0;
     padding:0;
 }
-
 .container{
-    max-width:750px;
+    max-width:850px;
     margin:40px auto;
     background:white;
     padding:30px;
     border-radius:12px;
     box-shadow:0 5px 20px rgba(0,0,0,0.1);
 }
-
 h2{
     text-align:center;
-    margin-bottom:20px;
 }
-
 label{
     font-weight:bold;
 }
-
 input, select{
     width:100%;
     padding:8px;
@@ -39,7 +34,6 @@ input, select{
     border-radius:6px;
     border:1px solid #ccc;
 }
-
 button{
     width:100%;
     padding:10px;
@@ -50,19 +44,22 @@ button{
     font-size:16px;
     cursor:pointer;
 }
-
 button:hover{
-    background:#146c43;
+    background:#157347;
 }
-
+.formula-box{
+    background:#f9fafc;
+    padding:15px;
+    border-radius:8px;
+    margin-bottom:20px;
+    font-size:14px;
+}
 .result{
     margin-top:20px;
     padding:15px;
-    background:#eefaf3;
+    background:#eefaf2;
     border-radius:8px;
-    font-size:16px;
 }
-
 .footer{
     text-align:center;
     margin-top:40px;
@@ -75,113 +72,155 @@ button:hover{
 <body>
 
 <div class="container">
-    <h2>Kalkulator Systematic Random Sampling</h2>
+<h2>Kalkulator Besar Sampel<br>Systematic Random Sampling</h2>
 
-    <label>Jenis Estimasi:</label>
-    <select id="type" onchange="toggleInput()">
-        <option value="proporsi">Proporsi</option>
-        <option value="mean">Mean (Rata-rata)</option>
-    </select>
+<div class="formula-box" id="formulaBox">
+<b>Rumus Besar Sampel (Proporsi):</b><br>
+n = (Z² × p × (1 − p)) / d²
+<br><br>
+<b>Rumus Interval Sistematik:</b><br>
+k = N / n
+<br><br>
+<b>Keterangan:</b><br>
+Z = Nilai Z<br>
+p = Estimasi proporsi<br>
+d = Margin of error<br>
+N = Total populasi<br>
+k = Interval pengambilan sampel
+</div>
 
-    <label>Nilai Z (contoh 1.96 untuk 95% CI):</label>
-    <input type="number" id="z" value="1.96" step="0.01">
+<label>Jenis Estimasi:</label>
+<select id="type" onchange="toggleInput()">
+<option value="proporsi">Proporsi</option>
+<option value="mean">Mean (Rata-rata)</option>
+</select>
 
-    <div id="proporsiInput">
-        <label>Estimasi Proporsi (p):</label>
-        <input type="number" id="p" value="0.5" step="0.01">
-    </div>
+<label>Nilai Z (contoh 1.96 untuk 95% CI):</label>
+<input type="number" id="z" value="1.96" step="0.01">
 
-    <div id="meanInput" style="display:none;">
-        <label>Standar Deviasi (S):</label>
-        <input type="number" id="s" step="0.01">
-    </div>
+<div id="proporsiInput">
+<label>Estimasi Proporsi (p):</label>
+<input type="number" id="p" value="0.5" step="0.01">
+</div>
 
-    <label>Margin of Error (d):</label>
-    <input type="number" id="d" value="0.05" step="0.01">
+<div id="meanInput" style="display:none;">
+<label>Standar Deviasi (S):</label>
+<input type="number" id="s" step="0.01">
+</div>
 
-    <label>Ukuran Populasi (WAJIB untuk Systematic):</label>
-    <input type="number" id="N" required>
+<label>Margin of Error (d):</label>
+<input type="number" id="d" value="0.05" step="0.01">
 
-    <label>Tambahan Non-Response (%):</label>
-    <input type="number" id="nr" value="0">
+<label>Total Populasi (N):</label>
+<input type="number" id="N">
 
-    <button onclick="hitung()">Hitung & Generate Sampel</button>
+<label>Tambahan Non-Response (%):</label>
+<input type="number" id="nr" value="0">
 
-    <div class="result" id="hasil" style="display:none;"></div>
+<button onclick="hitung()">Hitung</button>
+
+<div class="result" id="hasil" style="display:none;"></div>
+
 </div>
 
 <div class="footer">
-    © Ngakan Putu Anom Harjana, S.KM., M.A.<br>
-    anomharjana@unud.ac.id
+© Ngakan Putu Anom Harjana, S.KM., M.A.<br>
+anomharjana@unud.ac.id
 </div>
 
 <script>
 
 function toggleInput(){
-    let type = document.getElementById("type").value;
-    if(type === "proporsi"){
-        document.getElementById("proporsiInput").style.display="block";
-        document.getElementById("meanInput").style.display="none";
-    }else{
-        document.getElementById("proporsiInput").style.display="none";
-        document.getElementById("meanInput").style.display="block";
-    }
+let type = document.getElementById("type").value;
+let box = document.getElementById("formulaBox");
+
+if(type === "proporsi"){
+document.getElementById("proporsiInput").style.display="block";
+document.getElementById("meanInput").style.display="none";
+
+box.innerHTML = `
+<b>Rumus Besar Sampel (Proporsi):</b><br>
+n = (Z² × p × (1 − p)) / d²
+<br><br>
+<b>Rumus Interval Sistematik:</b><br>
+k = N / n
+<br><br>
+<b>Keterangan:</b><br>
+Z = Nilai Z<br>
+p = Estimasi proporsi<br>
+d = Margin of error<br>
+N = Total populasi<br>
+k = Interval pengambilan sampel
+`;
+}else{
+
+document.getElementById("proporsiInput").style.display="none";
+document.getElementById("meanInput").style.display="block";
+
+box.innerHTML = `
+<b>Rumus Besar Sampel (Mean):</b><br>
+n = (Z² × S²) / d²
+<br><br>
+<b>Rumus Interval Sistematik:</b><br>
+k = N / n
+<br><br>
+<b>Keterangan:</b><br>
+Z = Nilai Z<br>
+S = Standar deviasi<br>
+d = Margin of error<br>
+N = Total populasi<br>
+k = Interval pengambilan sampel
+`;
+}
 }
 
 function hitung(){
 
-    let type = document.getElementById("type").value;
-    let z = parseFloat(document.getElementById("z").value);
-    let d = parseFloat(document.getElementById("d").value);
-    let N = parseFloat(document.getElementById("N").value);
-    let nr = parseFloat(document.getElementById("nr").value);
+let type = document.getElementById("type").value;
+let z = parseFloat(document.getElementById("z").value);
+let d = parseFloat(document.getElementById("d").value);
+let N = parseFloat(document.getElementById("N").value);
+let nr = parseFloat(document.getElementById("nr").value);
 
-    if(isNaN(N) || N <= 0){
-        alert("Ukuran populasi wajib diisi untuk Systematic Sampling!");
-        return;
-    }
+if(!N || N <= 0){
+alert("Total populasi (N) wajib diisi untuk Systematic Sampling.");
+return;
+}
 
-    let n;
+let n;
 
-    if(type === "proporsi"){
-        let p = parseFloat(document.getElementById("p").value);
-        n = (Math.pow(z,2) * p * (1-p)) / Math.pow(d,2);
-    }else{
-        let s = parseFloat(document.getElementById("s").value);
-        n = (Math.pow(z,2) * Math.pow(s,2)) / Math.pow(d,2);
-    }
+if(type === "proporsi"){
+let p = parseFloat(document.getElementById("p").value);
+n = (Math.pow(z,2) * p * (1-p)) / Math.pow(d,2);
+}else{
+let s = parseFloat(document.getElementById("s").value);
+n = (Math.pow(z,2) * Math.pow(s,2)) / Math.pow(d,2);
+}
 
-    // Finite Population Correction
-    n = n / (1 + ((n - 1) / N));
+let n_awal = n;
 
-    // Non-response adjustment
-    if(!isNaN(nr) && nr > 0){
-        n = n / (1 - (nr/100));
-    }
+// FPC
+n = n / (1 + ((n - 1) / N));
 
-    n = Math.ceil(n);
+// Non-response
+if(nr > 0){
+n = n / (1 - (nr/100));
+}
 
-    // Hitung interval
-    let k = Math.floor(N / n);
+n = Math.ceil(n);
 
-    // Random start
-    let r = Math.floor(Math.random() * k) + 1;
+let k = Math.floor(N / n);
 
-    // Generate 10 contoh sampel pertama
-    let samples = [];
-    for(let i=0; i<10 && (r + i*k) <= N; i++){
-        samples.push(r + i*k);
-    }
+document.getElementById("hasil").style.display="block";
+document.getElementById("hasil").innerHTML = `
+<b>Hasil Perhitungan:</b><br><br>
+n (final) = <b>${n}</b> responden<br>
+Interval sistematik (k) = <b>${k}</b><br><br>
 
-    document.getElementById("hasil").style.display="block";
-    document.getElementById("hasil").innerHTML = `
-        <strong>Hasil Perhitungan:</strong><br><br>
-        Besar Sampel (n) = <strong>${n}</strong><br>
-        Interval Sampling (k = N/n) = <strong>${k}</strong><br>
-        Random Start (r) = <strong>${r}</strong><br><br>
-        <strong>Contoh 10 Sampel Pertama:</strong><br>
-        ${samples.join(", ")}
-    `;
+<b>Cara Pengambilan Sampel:</b><br>
+1. Tentukan angka awal secara acak antara 1 sampai ${k}.<br>
+2. Ambil setiap elemen ke-${k} hingga mencapai ${n} responden.
+`;
 }
 
 </script>
