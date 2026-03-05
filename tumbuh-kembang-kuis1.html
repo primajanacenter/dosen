@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Studi Kasus Penyuluhan Kesehatan Reproduksi</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f6fb;
+padding:30px;
+}
+
+.container{
+max-width:1000px;
+margin:auto;
+background:white;
+padding:30px;
+border-radius:10px;
+box-shadow:0 4px 15px rgba(0,0,0,0.1);
+}
+
+h1{
+text-align:center;
+color:#1f4e79;
+}
+
+.navgrid{
+display:grid;
+grid-template-columns:repeat(10,1fr);
+gap:8px;
+margin-bottom:25px;
+}
+
+.qbtn{
+padding:10px;
+border:none;
+border-radius:6px;
+background:#ddd;
+cursor:pointer;
+font-weight:bold;
+}
+
+.qbtn.active{
+background:#1f4e79;
+color:white;
+}
+
+.qbtn.answered{
+background:#2ecc71;
+color:white;
+}
+
+.option{
+display:block;
+padding:10px;
+border:1px solid #ddd;
+margin:8px 0;
+border-radius:6px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.option:hover{
+background:#eef3ff;
+}
+
+/* efek jawaban */
+
+.option.correct{
+background:#d4edda;
+border-color:#28a745;
+}
+
+.option.wrong{
+background:#f8d7da;
+border-color:#dc3545;
+}
+
+.answer{
+margin-top:15px;
+background:#eef4ff;
+padding:15px;
+border-radius:8px;
+}
+
+.correcttext{
+color:#2e7d32;
+font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Studi Kasus Penyuluhan Kesehatan Reproduksi</h1>
+
+<div class="navgrid" id="nav"></div>
+
+<div id="quiz"></div>
+
+</div>
+
+<script>
+
+const questions=[
+
+{
+q:"Sebuah puskesmas melakukan penyuluhan tentang kesehatan reproduksi kepada siswa SMA. Namun sebagian besar siswa terlihat pasif dan tidak terlibat dalam diskusi. Analisis paling tepat terhadap situasi ini adalah:",
+o:[
+"Materi terlalu sederhana",
+"Metode komunikasi kurang interaktif",
+"Sasaran penyuluhan tidak tepat",
+"Media visual terlalu banyak",
+"Peserta memiliki pengetahuan tinggi"],
+a:1,
+e:"Partisipasi rendah sering disebabkan metode penyuluhan yang kurang interaktif."
+},
+
+{
+q:"Dalam sebuah program kesehatan reproduksi, bidan menyampaikan materi kontrasepsi kepada pasangan usia subur menggunakan istilah medis yang kompleks. Dampak yang paling mungkin terjadi adalah:",
+o:[
+"Peningkatan pemahaman peserta",
+"Peserta menjadi lebih percaya diri",
+"Peserta mengalami kesulitan memahami pesan",
+"Peningkatan penggunaan kontrasepsi",
+"Peningkatan partisipasi diskusi"],
+a:2,
+e:"Bahasa teknis kompleks dapat menurunkan pemahaman audiens."
+},
+
+{
+q:"Sebuah desa memiliki angka pernikahan dini tinggi. Strategi penyuluhan yang paling tepat adalah:",
+o:[
+"Penyuluhan kontrasepsi kepada lansia",
+"Edukasi pubertas dan kesehatan reproduksi kepada remaja",
+"Penyuluhan MPASI kepada ibu hamil",
+"Kampanye imunisasi bayi",
+"Penyuluhan hipertensi"],
+a:1,
+e:"Pernikahan dini dapat dicegah melalui edukasi reproduksi remaja."
+},
+
+{
+q:"Dalam kelas ibu hamil, fasilitator meminta peserta berbagi pengalaman kehamilan sebelumnya. Pendekatan ini paling mencerminkan prinsip:",
+o:[
+"Komunikasi satu arah",
+"Partisipasi aktif",
+"Edukasi pasif",
+"Penyampaian informasi formal",
+"Evaluasi program"],
+a:1,
+e:"Diskusi pengalaman meningkatkan partisipasi peserta."
+},
+
+{
+q:"Seorang penyuluh kesehatan ingin meningkatkan efektivitas pesan pada masyarakat dengan tingkat pendidikan rendah. Strategi terbaik adalah:",
+o:[
+"Menggunakan grafik statistik kompleks",
+"Menggunakan bahasa sederhana dan ilustrasi visual",
+"Menggunakan jurnal ilmiah",
+"Menggunakan terminologi medis",
+"Menggunakan ceramah panjang"],
+a:1,
+e:"Visual dan bahasa sederhana meningkatkan pemahaman."
+},
+
+{
+q:"Program penyuluhan kesehatan reproduksi gagal meningkatkan penggunaan kontrasepsi. Evaluasi menunjukkan bahwa materi tidak mempertimbangkan norma budaya setempat. Faktor yang diabaikan adalah:",
+o:[
+"Efektivitas media",
+"Kesesuaian budaya",
+"Tingkat pendidikan",
+"Jumlah tenaga kesehatan",
+"Durasi penyuluhan"],
+a:1,
+e:"Budaya sangat mempengaruhi penerimaan pesan kesehatan."
+},
+
+{
+q:"Dalam suatu penyuluhan remaja, penggunaan peer educator bertujuan untuk:",
+o:[
+"Mengurangi biaya program",
+"Meningkatkan kedekatan dan kepercayaan peserta",
+"Mengurangi jumlah tenaga kesehatan",
+"Menggantikan tenaga medis",
+"Mengurangi waktu penyuluhan"],
+a:1,
+e:"Remaja lebih mudah menerima pesan dari teman sebaya."
+},
+
+{
+q:"Sebuah program edukasi kesehatan reproduksi menggunakan video pendek dan simulasi diskusi. Strategi ini terutama bertujuan untuk:",
+o:[
+"Meningkatkan kompleksitas materi",
+"Meningkatkan keterlibatan peserta",
+"Mengurangi interaksi peserta",
+"Mengurangi waktu penyuluhan",
+"Meningkatkan formalitas penyuluhan"],
+a:1,
+e:"Metode interaktif meningkatkan engagement."
+},
+
+{
+q:"Dalam perencanaan penyuluhan kesehatan reproduksi, analisis karakteristik sasaran penting dilakukan untuk:",
+o:[
+"Menentukan waktu penyuluhan",
+"Menyesuaikan pesan dan metode komunikasi",
+"Meningkatkan jumlah peserta",
+"Mengurangi biaya program",
+"Meningkatkan durasi penyuluhan"],
+a:1,
+e:"Karakteristik sasaran menentukan strategi komunikasi."
+},
+
+{
+q:"Seorang bidan menyampaikan materi tentang tanda bahaya kehamilan menggunakan simulasi kasus. Pendekatan ini termasuk metode:",
+o:[
+"Ceramah",
+"Simulasi pembelajaran",
+"Observasi klinis",
+"Demonstrasi alat",
+"Penilaian kesehatan"],
+a:1,
+e:"Simulasi membantu peserta memahami situasi nyata."
+},
+
+{
+q:"Dalam penyuluhan kesehatan reproduksi, indikator keberhasilan paling kuat adalah:",
+o:[
+"Jumlah peserta hadir",
+"Peningkatan pengetahuan",
+"Perubahan perilaku kesehatan",
+"Lama durasi penyuluhan",
+"Jumlah media digunakan"],
+a:2,
+e:"Tujuan utama penyuluhan adalah perubahan perilaku."
+},
+
+{
+q:"Sebuah penyuluhan menggunakan poster bergambar sederhana. Pendekatan ini paling efektif untuk kelompok:",
+o:[
+"Pendidikan tinggi",
+"Literasi kesehatan rendah",
+"Tenaga kesehatan",
+"Mahasiswa kedokteran",
+"Dosen kesehatan"],
+a:1,
+e:"Poster visual memudahkan pemahaman kelompok literasi rendah."
+},
+
+{
+q:"Dalam penyuluhan ibu hamil, diskusi tanda bahaya kehamilan bertujuan untuk:",
+o:[
+"Meningkatkan kesadaran risiko",
+"Mengurangi jumlah ANC",
+"Mengurangi konsultasi medis",
+"Meningkatkan kunjungan bayi",
+"Mengurangi persalinan"],
+a:0,
+e:"Pengetahuan tanda bahaya meningkatkan deteksi dini."
+},
+
+{
+q:"Jika peserta penyuluhan menunjukkan sikap defensif terhadap topik kesehatan reproduksi, strategi terbaik adalah:",
+o:[
+"Meningkatkan volume ceramah",
+"Menghindari diskusi",
+"Menggunakan pendekatan empatik dan dialog",
+"Mengakhiri penyuluhan",
+"Mengubah topik"],
+a:2,
+e:"Pendekatan empatik membantu membangun kepercayaan."
+},
+
+{
+q:"Salah satu alasan penggunaan metode diskusi kelompok kecil dalam penyuluhan adalah:",
+o:[
+"Mengurangi waktu",
+"Meningkatkan partisipasi peserta",
+"Mengurangi interaksi",
+"Mengurangi informasi",
+"Meningkatkan formalitas"],
+a:1,
+e:"Kelompok kecil meningkatkan interaksi."
+},
+
+{
+q:"Dalam program kesehatan reproduksi remaja, penggunaan media sosial terutama bertujuan untuk:",
+o:[
+"Meningkatkan akses informasi",
+"Mengurangi interaksi langsung",
+"Mengurangi diskusi",
+"Meningkatkan formalitas",
+"Mengurangi jumlah peserta"],
+a:0,
+e:"Media sosial meningkatkan akses informasi bagi remaja."
+},
+
+{
+q:"Pendekatan penyuluhan yang paling efektif untuk masyarakat multikultural adalah:",
+o:[
+"Menggunakan pendekatan seragam",
+"Menggunakan pendekatan sensitif budaya",
+"Menggunakan bahasa asing",
+"Menggunakan ceramah panjang",
+"Menghindari diskusi"],
+a:1,
+e:"Sensitivitas budaya meningkatkan penerimaan pesan."
+},
+
+{
+q:"Dalam evaluasi program penyuluhan kesehatan reproduksi, perubahan perilaku biasanya diukur melalui:",
+o:[
+"Tes pengetahuan",
+"Observasi praktik kesehatan",
+"Kehadiran peserta",
+"Jumlah materi",
+"Durasi penyuluhan"],
+a:1,
+e:"Perubahan perilaku terlihat dari praktik kesehatan."
+},
+
+{
+q:"Dalam konteks kesehatan reproduksi, pemberdayaan masyarakat berarti:",
+o:[
+"Masyarakat menerima informasi pasif",
+"Masyarakat mampu mengambil keputusan kesehatan sendiri",
+"Masyarakat hanya mengikuti instruksi tenaga kesehatan",
+"Masyarakat bergantung pada fasilitas kesehatan",
+"Masyarakat menghindari diskusi"],
+a:1,
+e:"Pemberdayaan berarti meningkatkan kemampuan pengambilan keputusan."
+},
+
+{
+q:"Jika penyuluhan hanya meningkatkan pengetahuan tanpa perubahan perilaku, maka kemungkinan penyebabnya adalah:",
+o:[
+"Pesan tidak relevan dengan kehidupan peserta",
+"Peserta terlalu banyak",
+"Materi terlalu singkat",
+"Media terlalu sedikit",
+"Durasi terlalu lama"],
+a:0,
+e:"Perilaku berubah jika pesan relevan dengan kehidupan peserta."
+},
+
+{
+q:"Dalam penyuluhan keluarga berencana, keterlibatan suami penting karena:",
+o:[
+"Mengurangi biaya program",
+"Meningkatkan dukungan keputusan reproduksi",
+"Mengurangi jumlah peserta",
+"Meningkatkan durasi penyuluhan",
+"Mengurangi interaksi"],
+a:1,
+e:"Keputusan KB sering dipengaruhi pasangan."
+},
+
+{
+q:"Metode role-play dalam penyuluhan terutama bertujuan untuk:",
+o:[
+"Mengurangi diskusi",
+"Meningkatkan pengalaman belajar praktis",
+"Mengurangi partisipasi",
+"Menghindari komunikasi",
+"Meningkatkan ceramah"],
+a:1,
+e:"Role-play membantu simulasi situasi nyata."
+},
+
+{
+q:"Dalam pendekatan komunikasi kesehatan modern, pesan paling efektif adalah pesan yang:",
+o:[
+"Panjang dan detail",
+"Singkat, jelas, dan relevan",
+"Banyak istilah ilmiah",
+"Sangat formal",
+"Hanya berbasis teks"],
+a:1,
+e:"Pesan sederhana dan relevan lebih mudah dipahami."
+},
+
+{
+q:"Sebuah penyuluhan kesehatan reproduksi menggunakan cerita pengalaman nyata pasien. Pendekatan ini disebut:",
+o:[
+"Data statistik",
+"Narasi kesehatan",
+"Simulasi klinis",
+"Model epidemiologi",
+"Demonstrasi alat"],
+a:1,
+e:"Narasi atau storytelling meningkatkan keterlibatan emosional."
+},
+
+{
+q:"Jika tujuan utama program adalah meningkatkan kelangsungan hidup anak, fokus penyuluhan paling relevan adalah:",
+o:[
+"Perawatan lansia",
+"Kesehatan reproduksi dan maternal",
+"Penyakit degeneratif",
+"Olahraga remaja",
+"Kesehatan mental pekerja"],
+a:1,
+e:"Kesehatan reproduksi dan maternal sangat mempengaruhi survival anak."
+}
+
+]
+
+let answers=new Array(questions.length).fill(null)
+let current=null
+
+function createNav(){
+
+let html=""
+
+questions.forEach((q,i)=>{
+html+=`<button class="qbtn" id="nav${i}" onclick="loadQuestion(${i})">${i+1}</button>`
+})
+
+document.getElementById("nav").innerHTML=html
+
+}
+
+function loadQuestion(i){
+
+current=i
+
+let q=questions[i]
+
+let html=`<h3>${i+1}. ${q.q}</h3>`
+
+q.o.forEach((opt,index)=>{
+
+let disabled = answers[i]!==null ? "disabled" : ""
+
+html+=`
+<label class="option" id="opt${index}">
+<input type="radio" name="opt" ${disabled}
+onclick="answer(${index})">
+${opt}
+</label>
+`
+
+})
+
+html+=`<div id="explain"></div>`
+
+document.getElementById("quiz").innerHTML=html
+
+updateNav()
+
+if(answers[i]!=null) showExplain()
+
+}
+
+function answer(val){
+
+answers[current]=val
+
+let q=questions[current]
+
+/* tandai jawaban */
+
+q.o.forEach((opt,i)=>{
+
+let el=document.getElementById("opt"+i)
+
+if(i===q.a){
+el.classList.add("correct")
+}
+
+if(i===val && val!==q.a){
+el.classList.add("wrong")
+}
+
+})
+
+/* kunci semua opsi */
+
+document.querySelectorAll("input[name='opt']").forEach(el=>{
+el.disabled=true
+})
+
+showExplain()
+
+updateNav()
+
+}
+
+function showExplain(){
+
+let q=questions[current]
+
+document.getElementById("explain").innerHTML=
+
+`<div class="answer">
+<div class="correcttext">Jawaban benar: ${q.o[q.a]}</div>
+<br>
+<b>Pembahasan:</b><br>
+${q.e}
+</div>`
+
+}
+
+function updateNav(){
+
+questions.forEach((q,i)=>{
+
+let btn=document.getElementById("nav"+i)
+
+btn.classList.remove("active")
+btn.classList.remove("answered")
+
+if(i===current) btn.classList.add("active")
+
+if(answers[i]!=null) btn.classList.add("answered")
+
+})
+
+}
+
+createNav()
+
+</script>
+
+</body>
+</html>
