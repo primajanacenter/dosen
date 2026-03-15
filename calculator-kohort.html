@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ilustrasi Penelitian Cohort</title>
+
+<style>
+body{font-family:Arial;background:#f4f6f8;margin:0;padding:20px;text-align:center}
+h1{color:#2c3e50}
+
+.menu{display:flex;justify-content:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.menu button{padding:10px 16px;border:none;border-radius:6px;background:#3498db;color:white;font-weight:bold;cursor:pointer}
+.menu button:hover{background:#2980b9}
+
+.card{background:white;padding:25px;border-radius:10px;max-width:1100px;margin:auto;box-shadow:0 2px 10px rgba(0,0,0,0.1);text-align:left}
+
+input{padding:6px;width:100px;text-align:center;margin:5px}
+
+.population{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:6px;max-width:900px;margin:20px auto}
+.member{padding:7px;background:#ecf0f1;border-radius:4px;transition:0.3s;font-size:12px;text-align:center}
+
+.exposed{background:#f39c12;color:white}
+.unexposed{background:#3498db;color:white}
+.disease{background:#e74c3c !important;color:white;transform:scale(1.2)}
+
+.table{margin-top:20px;border-collapse:collapse;margin-left:auto;margin-right:auto}
+.table td,.table th{border:1px solid #ccc;padding:8px 12px}
+
+.formula{margin-top:20px;font-size:18px;text-align:center}
+.result{font-size:20px;margin-top:15px;font-weight:bold;color:#2c3e50;text-align:center}
+
+.explain{background:#f9fbff;border-left:4px solid #3498db;padding:12px;margin-top:15px;font-size:14px}
+
+.bar-container{width:80%;margin:10px auto;background:#ddd;height:20px;border-radius:10px;overflow:hidden}
+.bar{height:100%}
+.bar-red{background:#e74c3c}
+.bar-green{background:#2ecc71}
+
+.forest{margin:40px auto;width:80%;position:relative;height:120px}
+.forest-line{position:absolute;top:60px;left:0;right:0;height:2px;background:#aaa}
+.forest-null{position:absolute;top:40px;left:50%;width:2px;height:40px;background:#000}
+.forest-ci{position:absolute;top:58px;height:4px;background:#3498db}
+.forest-point{position:absolute;top:54px;width:12px;height:12px;border-radius:50%;background:#e74c3c}
+
+.footer{margin-top:40px;font-size:13px;color:#555;border-top:1px solid #ddd;padding-top:15px;text-align:center}
+</style>
+</head>
+
+<body>
+
+<h1>🧪 Ilustrasi Penelitian Cohort</h1>
+
+<div class="menu">
+<button onclick="stepSample()">1️⃣ Besar Sampel</button>
+<button onclick="generatePopulation()">2️⃣ Generate Populasi</button>
+<button onclick="assignExposure()">3️⃣ Bagi Paparan</button>
+<button onclick="followUp()">4️⃣ Follow-up</button>
+<button onclick="calculateRR()">5️⃣ Hitung RR</button>
+<button onclick="simulateConfounding()">6️⃣ Simulasi Confounding</button>
+</div>
+
+<div class="card" id="content">Mulai dari langkah Perhitungan Besar Sampel</div>
+
+<div class="footer">
+© 2026 Ngakan Putu Anom Harjana, S.KM., M.A. (anomharjana@unud.ac.id)
+</div>
+
+<script>
+
+let population=[]
+let exposed=[]
+let unexposed=[]
+
+let diseaseE=0
+let diseaseU=0
+let sampleSize=0
+
+function stepSample(){
+
+content.innerHTML=`
+<h2>Perhitungan Besar Sampel Cohort</h2>
+
+<div class="formula">
+n = (Zα/2 + Zβ)² × [ P₁(1−P₁) + P₀(1−P₀) ] / (P₁ − P₀)²
+</div>
+
+<div class="explain">
+<b>Keterangan komponen rumus:</b><br><br>
+<b>P₁</b> = proporsi kejadian penyakit pada kelompok <b>terpapar</b>.<br>
+<b>P₀</b> = proporsi kejadian penyakit pada kelompok <b>tidak terpapar</b>.<br>
+<b>Zα/2</b> = nilai Z pada tingkat signifikansi penelitian (biasanya 1.96 untuk α = 0.05).<br>
+<b>Zβ</b> = nilai Z yang mewakili kekuatan uji statistik (power), misalnya 0.84 untuk power 80%.<br>
+
+Rumus ini digunakan untuk menentukan jumlah minimal sampel pada masing-masing kelompok
+agar penelitian mampu mendeteksi perbedaan risiko penyakit antara kelompok paparan.
+</div>
+
+<br>
+<label>P₁ (proporsi kejadian exposed)</label><br>
+<input id="p1" value="0.20"><br>
+
+<label>P₀ (proporsi kejadian unexposed)</label><br>
+<input id="p0" value="0.10"><br>
+
+<label>Zα/2</label><br>
+<input id="za" value="1.96"><br>
+
+<label>Zβ</label><br>
+<input id="zb" value="0.84"><br><br>
+
+<button onclick="calculateSample()">Hitung Sampel</button>
+
+<div id="sampleResult"></div>
+`
+}
+
+function calculateSample(){
+
+let p1=parseFloat(p1El().value)
+let p0=parseFloat(p0El().value)
+let za=parseFloat(zaEl().value)
+let zb=parseFloat(zbEl().value)
+
+let num=Math.pow((za+zb),2)*((p1*(1-p1))+(p0*(1-p0)))
+let den=Math.pow((p1-p0),2)
+
+let n=num/den
+
+sampleSize=Math.ceil(n)
+
+sampleResult.innerHTML=`
+<h3>Substitusi Perhitungan</h3>
+
+<div class="explain">
+Langkah perhitungan dilakukan dengan mengganti setiap komponen rumus
+menggunakan nilai yang telah dimasukkan.
+</div>
+
+n = (${za}+${zb})² × [${p1}(1-${p1}) + ${p0}(1-${p0})] / (${p1}-${p0})²
+
+<br><br>
+
+n = ${num.toFixed(4)} / ${den.toFixed(4)}
+
+<br><br>
+
+<b>Besar Sampel per Kelompok = ${sampleSize}</b><br>
+Total Sampel = ${sampleSize*2}
+`
+}
+
+function generatePopulation(){
+
+let N=sampleSize*2
+population=[]
+
+let html='<h2>Populasi Penelitian</h2>'
+html+='<div class="explain">Populasi simulasi dibuat berdasarkan hasil perhitungan besar sampel. Setengah populasi akan menjadi kelompok exposed dan setengahnya kelompok unexposed.</div>'
+html+='<div class="population">'
+
+for(let i=1;i<=N;i++){
+population.push(i)
+html+=`<div class="member" id="p${i}">${i}</div>`
+}
+
+html+='</div>'
+
+content.innerHTML=html
+
+}
+
+function assignExposure(){
+
+let shuffled=[...population].sort(()=>Math.random()-0.5)
+let half=population.length/2
+
+exposed=shuffled.slice(0,half)
+unexposed=shuffled.slice(half)
+
+exposed.forEach(i=>document.getElementById("p"+i).classList.add("exposed"))
+unexposed.forEach(i=>document.getElementById("p"+i).classList.add("unexposed"))
+
+content.innerHTML+=`<div class="explain">Pada penelitian cohort, populasi dibagi menjadi dua kelompok utama yaitu kelompok yang terpapar faktor risiko (exposed) dan kelompok yang tidak terpapar (unexposed).</div>`
+
+content.innerHTML+=`<p>Exposed: ${exposed.length} | Unexposed: ${unexposed.length}</p>`
+
+}
+
+async function followUp(){
+
+diseaseE=0
+
+diseaseU=0
+
+for(let id of exposed){
+if(Math.random()<0.25){
+document.getElementById("p"+id).classList.add("disease")
+diseaseE++
+}
+await sleep(20)
+}
+
+for(let id of unexposed){
+if(Math.random()<0.08){
+document.getElementById("p"+id).classList.add("disease")
+diseaseU++
+}
+await sleep(20)
+}
+
+content.innerHTML+=`<div class="explain">Selama periode follow-up, peneliti mengamati apakah individu mengalami penyakit atau tidak. Hasil ini kemudian digunakan untuk menghitung risiko penyakit pada masing-masing kelompok.</div>`
+
+content.innerHTML+=`<h3>Hasil Follow-up</h3>Exposed disease: ${diseaseE}<br>Unexposed disease: ${diseaseU}`
+
+}
+
+function calculateRR(){
+
+let a=diseaseE
+let b=exposed.length-diseaseE
+let c=diseaseU
+let d=unexposed.length-diseaseU
+
+let riskE=a/(a+b)
+let riskU=c/(c+d)
+
+let rr=riskE/riskU
+
+let se=Math.sqrt((1/a)-(1/(a+b))+(1/c)-(1/(c+d)))
+let lnRR=Math.log(rr)
+
+let lower=Math.exp(lnRR-1.96*se)
+let upper=Math.exp(lnRR+1.96*se)
+
+let pos=(rr/5)*100
+let left=(lower/5)*100
+let width=((upper-lower)/5)*100
+
+content.innerHTML+=`
+
+<h2>Perhitungan Relative Risk</h2>
+
+<div class="explain">
+<b>Relative Risk (RR)</b> membandingkan risiko kejadian penyakit antara kelompok
+terpapar dan tidak terpapar.
+
+<br><br>
+RR = Risk pada kelompok exposed / Risk pada kelompok unexposed
+
+<br><br>
+Jika RR > 1 → paparan meningkatkan risiko penyakit.<br>
+Jika RR = 1 → tidak ada hubungan.<br>
+Jika RR < 1 → paparan bersifat protektif.
+</div>
+
+<table class="table">
+<tr><th></th><th>Penyakit</th><th>Tidak</th></tr>
+<tr><th>Exposed</th><td>${a}</td><td>${b}</td></tr>
+<tr><th>Unexposed</th><td>${c}</td><td>${d}</td></tr>
+</table>
+
+<div class="result">
+RR = ${rr.toFixed(2)}<br>
+95% CI = (${lower.toFixed(2)} – ${upper.toFixed(2)})
+</div>
+
+<div class="explain">
+Confidence Interval (CI) menunjukkan rentang nilai kemungkinan
+Relative Risk sebenarnya di populasi.
+Jika interval tidak melewati nilai 1, maka hubungan dianggap
+signifikan secara statistik.
+</div>
+
+<h3>Forest Plot RR</h3>
+
+<div class="forest">
+<div class="forest-line"></div>
+<div class="forest-null"></div>
+<div class="forest-ci" style="left:${left}%;width:${width}%"></div>
+<div class="forest-point" style="left:${pos}%"></div>
+</div>
+
+`
+
+}
+
+function simulateConfounding(){
+
+content.innerHTML+=`
+
+<h2>Simulasi Confounding</h2>
+
+<div class="explain">
+<b>Confounding</b> terjadi ketika faktor lain mempengaruhi hubungan
+antara paparan dan penyakit.
+
+Contoh: merokok dapat meningkatkan risiko penyakit jantung.
+Jika kelompok exposed memiliki lebih banyak perokok,
+maka hubungan antara paparan utama dan penyakit dapat terlihat
+lebih kuat dari yang sebenarnya.
+</div>
+
+`
+
+}
+
+function p1El(){return document.getElementById("p1")}
+function p0El(){return document.getElementById("p0")}
+function zaEl(){return document.getElementById("za")}
+function zbEl(){return document.getElementById("zb")}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+
+</script>
+
+</body>
+</html>
