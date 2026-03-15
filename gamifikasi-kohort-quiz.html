@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Besar Sampel Cohort</title>
+
+<style>
+body{
+font-family:Arial;
+background:#ffffff;
+text-align:center;
+padding:20px;
+}
+
+h1{color:#2c3e50;}
+
+.quiz-container{
+max-width:900px;
+margin:auto;
+}
+
+.number-grid{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:10px;
+margin:20px 0;
+}
+
+.number-btn{
+padding:14px;
+border:none;
+border-radius:8px;
+background:#3498db;
+color:white;
+font-size:15px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.number-btn:hover{background:#2980b9;}
+
+.number-btn.answered{
+background:#95a5a6;
+cursor:not-allowed;
+}
+
+.option{
+display:block;
+margin:8px 0;
+padding:10px;
+border:1px solid #ccc;
+border-radius:5px;
+cursor:pointer;
+}
+
+.option:hover{background:#f2f2f2;}
+
+.correct{background:#2ecc71;color:white;}
+.wrong{background:#e74c3c;color:white;}
+
+.progress-bar{
+width:100%;
+background:#eee;
+height:15px;
+border-radius:10px;
+margin:15px 0;
+overflow:hidden;
+}
+
+.progress{
+height:100%;
+width:0%;
+background:#27ae60;
+}
+
+.footer{
+margin-top:40px;
+font-size:13px;
+color:#555;
+border-top:1px solid #ddd;
+padding-top:15px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🧠 Quiz Konsep Besar Sampel Penelitian Cohort</h1>
+
+<div class="quiz-container">
+
+<div class="number-grid" id="numberGrid"></div>
+
+<div id="questionBox"></div>
+<div id="optionsBox"></div>
+
+<div class="progress-bar">
+<div class="progress" id="progress"></div>
+</div>
+
+<div id="scoreBox">Skor: 0</div>
+
+</div>
+
+<div class="footer">
+© 2026 Ngakan Putu Anom Harjana, S.KM., M.A.<br>
+anomharjana@unud.ac.id
+</div>
+
+<script>
+
+/* ===== BANK SOAL ===== */
+
+const questionBank=[
+
+{q:"Penelitian cohort merupakan desain penelitian yang mengikuti subjek berdasarkan...",o:["Outcome","Paparan","Randomisasi","Sampling"],a:1},
+
+{q:"Tujuan utama perhitungan besar sampel adalah untuk...",o:["Menghemat waktu","Menjamin kekuatan statistik penelitian","Mengurangi populasi","Memilih variabel"],a:1},
+
+{q:"Dalam rumus besar sampel cohort, P₁ menunjukkan...",o:["Proporsi penyakit pada kelompok terpapar","Proporsi penyakit pada kelompok tidak terpapar","Jumlah sampel","Power penelitian"],a:0},
+
+{q:"Dalam rumus besar sampel cohort, P₀ menunjukkan...",o:["Proporsi penyakit kelompok terpapar","Proporsi penyakit kelompok tidak terpapar","Jumlah populasi","RR"],a:1},
+
+{q:"Zα/2 dalam rumus besar sampel berkaitan dengan...",o:["Power penelitian","Tingkat signifikansi statistik","Jumlah sampel","RR"],a:1},
+
+{q:"Nilai Zα/2 biasanya digunakan ketika α = 0.05 adalah...",o:["1.64","1.96","0.84","2.58"],a:1},
+
+{q:"Zβ berkaitan dengan...",o:["Signifikansi","Power penelitian","Proporsi penyakit","Jumlah populasi"],a:1},
+
+{q:"Power penelitian menunjukkan...",o:["Probabilitas mendeteksi efek jika efek benar ada","Ukuran populasi","Jumlah sampel","Sampling error"],a:0},
+
+{q:"Jika power penelitian meningkat maka besar sampel biasanya...",o:["Menurun","Tetap","Meningkat","Tidak berubah"],a:2},
+
+{q:"Jika perbedaan antara P₁ dan P₀ semakin kecil maka besar sampel...",o:["Lebih kecil","Lebih besar","Tidak berubah","Tidak dapat dihitung"],a:1},
+
+{q:"Relative Risk dalam penelitian cohort digunakan untuk...",o:["Mengukur hubungan paparan dan penyakit","Menghitung sampel","Menentukan populasi","Menghitung power"],a:0},
+
+{q:"Jika RR = 2 maka artinya...",o:["Risiko dua kali lebih kecil","Risiko dua kali lebih besar","Tidak ada hubungan","Risiko sama"],a:1},
+
+{q:"Jika RR = 1 maka interpretasinya adalah...",o:["Ada hubungan","Tidak ada hubungan","Risiko meningkat","Risiko menurun"],a:1},
+
+{q:"Confidence Interval digunakan untuk menunjukkan...",o:["Ukuran populasi","Rentang estimasi parameter","Jumlah sampel","Power penelitian"],a:1},
+
+{q:"Jika CI RR melewati angka 1 maka hubungan...",o:["Signifikan","Tidak signifikan","Tidak dapat dihitung","Selalu positif"],a:1},
+
+{q:"Dalam tabel 2×2 epidemiologi, simbol 'a' biasanya menunjukkan...",o:["Exposed dengan penyakit","Exposed tanpa penyakit","Unexposed dengan penyakit","Total sampel"],a:0},
+
+{q:"Dalam tabel 2×2 epidemiologi, simbol 'c' menunjukkan...",o:["Exposed sakit","Unexposed sakit","Exposed tidak sakit","Total"],a:1},
+
+{q:"Follow-up dalam penelitian cohort digunakan untuk...",o:["Menentukan paparan","Mengamati kejadian penyakit","Menghitung populasi","Randomisasi"],a:1},
+
+{q:"Salah satu kelebihan penelitian cohort adalah...",o:["Dapat menghitung insidensi","Cepat","Murah","Tidak perlu follow-up"],a:0},
+
+{q:"Salah satu kelemahan penelitian cohort adalah...",o:["Tidak bisa menghitung RR","Biaya dan waktu besar","Tidak dapat mengukur risiko","Tidak membutuhkan sampel"],a:1}
+
+];
+
+
+/* ===== LOGIKA QUIZ ===== */
+
+let selectedQuestions=questionBank.sort(()=>Math.random()-0.5);
+
+let answered=0;
+let score=0;
+
+function initNumbers(){
+
+let grid=document.getElementById("numberGrid");
+
+for(let i=0;i<20;i++){
+
+let btn=document.createElement("button");
+
+btn.className="number-btn";
+
+btn.innerText=i+1;
+
+btn.onclick=()=>loadQuestion(i,btn);
+
+grid.appendChild(btn);
+
+}
+
+}
+
+function loadQuestion(index,button){
+
+if(button.classList.contains("answered")) return;
+
+let q=selectedQuestions[index];
+
+document.getElementById("questionBox").innerHTML=
+"<h3>Pertanyaan "+(index+1)+"</h3>"+q.q;
+
+let optionsHTML="";
+
+q.o.forEach((opt,i)=>{
+optionsHTML+=`<div class="option" onclick="checkAnswer(${index},${i},this)">${opt}</div>`;
+});
+
+document.getElementById("optionsBox").innerHTML=optionsHTML;
+
+}
+
+function checkAnswer(qIndex,optIndex,element){
+
+let correct=selectedQuestions[qIndex].a;
+
+let options=document.querySelectorAll(".option");
+
+options.forEach(o=>o.style.pointerEvents="none");
+
+if(optIndex===correct){
+element.classList.add("correct");
+score++;
+}else{
+element.classList.add("wrong");
+options[correct].classList.add("correct");
+}
+
+document.getElementsByClassName("number-btn")[qIndex].classList.add("answered");
+
+answered++;
+
+document.getElementById("scoreBox").innerHTML="Skor: "+score;
+
+updateProgress();
+
+if(answered===20){
+setTimeout(showResult,800);
+}
+
+}
+
+function updateProgress(){
+document.getElementById("progress").style.width=(answered/20*100)+"%";
+}
+
+function showResult(){
+
+let percent=(score/20*100).toFixed(0);
+
+let message= percent>=80 ? "🎉 Sangat Baik" : "📘 Perlu Belajar Lagi";
+
+document.getElementById("questionBox").innerHTML=
+"<h2>Hasil Akhir</h2>"+
+"<p>Skor: "+score+" / 20 ("+percent+"%)</p>"+
+"<h3>"+message+"</h3>";
+
+document.getElementById("optionsBox").innerHTML="";
+
+}
+
+initNumbers();
+
+</script>
+
+</body>
+</html>
