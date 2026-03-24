@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Korelasi & Regresi</title>
+
+<style>
+body{font-family:Arial;text-align:center;padding:20px;}
+h1{color:#2c3e50;}
+
+button{
+    padding:10px;
+    margin:10px;
+    border:none;
+    border-radius:5px;
+    background:#3498db;
+    color:white;
+    cursor:pointer;
+}
+
+input{padding:6px;width:100px;margin:5px;text-align:center;}
+
+.card{
+    background:#f4f6f7;
+    padding:20px;
+    margin:15px auto;
+    border-radius:10px;
+    max-width:800px;
+    text-align:left;
+}
+
+.hidden{display:none;}
+
+canvas{
+    background:#fff;
+    border:1px solid #ccc;
+    margin-top:15px;
+}
+
+.footer{
+    margin-top:40px;
+    font-size:13px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📊 Korelasi & Regresi: Sample Size & Simulasi</h1>
+
+<div>
+<button onclick="showStep(1)">Langkah 1: Hitung Sampel</button>
+<button onclick="showStep(2)">Langkah 2: Simulasi</button>
+</div>
+
+<!-- STEP 1 -->
+<div id="step1">
+
+<div class="card">
+<b>Input Korelasi:</b><br>
+r (perkiraan): <input id="r" value="0.3"><br>
+<button onclick="calcCorr()">Hitung Sampel Korelasi</button>
+</div>
+
+<div class="card" id="formulaCorr"></div>
+<div class="card" id="detailCorr"></div>
+<div class="card" id="resultCorr"></div>
+
+<div class="card">
+<b>Input Regresi:</b><br>
+Jumlah variabel independen (m): <input id="m" value="3"><br>
+<button onclick="calcReg()">Hitung Sampel Regresi</button>
+</div>
+
+<div class="card" id="resultReg"></div>
+
+</div>
+
+<!-- STEP 2 -->
+<div id="step2" class="hidden">
+
+<div class="card">
+<button onclick="simulateWeak()">Simulasi Korelasi Lemah</button>
+<button onclick="simulateStrong()">Simulasi Korelasi Kuat</button>
+<button onclick="simulateRegression()">Simulasi Regresi</button>
+</div>
+
+<canvas id="chart" width="500" height="400"></canvas>
+
+<div class="card" id="insight"></div>
+
+</div>
+
+<div class="footer">
+© 2026 Ngakan Putu Anom Harjana<br>
+anomharjana@unud.ac.id
+</div>
+
+<script>
+
+// NAV
+function showStep(step){
+    document.getElementById("step1").classList.add("hidden");
+    document.getElementById("step2").classList.add("hidden");
+    document.getElementById("step"+step).classList.remove("hidden");
+}
+
+// STEP 1 KORELASI
+function calcCorr(){
+
+    let r=parseFloat(document.getElementById("r").value);
+
+    let n=Math.ceil((8/(r*r))+3);
+
+    document.getElementById("formulaCorr").innerHTML=`
+    <b>📐 Rumus Korelasi:</b><br><br>
+    n ≈ (8 / r²) + 3
+    `;
+
+    document.getElementById("detailCorr").innerHTML=`
+    <b>🧮 Substitusi:</b><br><br>
+    n = (8 / (${r})²) + 3<br>
+    = (8 / ${(r*r).toFixed(3)}) + 3<br>
+    = ${(8/(r*r)).toFixed(2)} + 3
+    `;
+
+    document.getElementById("resultCorr").innerHTML=`
+    <b>📊 Hasil:</b><br>
+    Sampel minimal = <b>${n}</b>
+    `;
+}
+
+// REGRESI
+function calcReg(){
+
+    let m=parseInt(document.getElementById("m").value);
+
+    let n1=50+8*m;
+    let n2=104+m;
+
+    document.getElementById("resultReg").innerHTML=`
+    <b>📐 Rule of Thumb (Green, 1991):</b><br><br>
+    Uji model: n ≥ ${n1}<br>
+    Uji variabel: n ≥ ${n2}
+    `;
+}
+
+// SIMULATION
+let canvas=document.getElementById("chart");
+let ctx=canvas.getContext("2d");
+
+function draw(points){
+    ctx.clearRect(0,0,500,400);
+
+    points.forEach(p=>{
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,4,0,2*Math.PI);
+        ctx.fill();
+    });
+}
+
+// WEAK
+function simulateWeak(){
+    let pts=[];
+    for(let i=0;i<50;i++){
+        pts.push({x:Math.random()*500,y:Math.random()*400});
+    }
+    draw(pts);
+
+    document.getElementById("insight").innerHTML=
+    "Korelasi lemah → titik menyebar → butuh sampel besar";
+}
+
+// STRONG
+function simulateStrong(){
+    let pts=[];
+    for(let i=0;i<50;i++){
+        let x=Math.random()*500;
+        let y=x*0.7 + Math.random()*50;
+        pts.push({x:x,y:y});
+    }
+    draw(pts);
+
+    document.getElementById("insight").innerHTML=
+    "Korelasi kuat → pola jelas → sampel lebih kecil cukup";
+}
+
+// REGRESSION
+function simulateRegression(){
+    let pts=[];
+    for(let i=0;i<50;i++){
+        let x=Math.random()*500;
+        let y=0.5*x + 0.3*(Math.random()*500) + 20;
+        pts.push({x:x,y:y});
+    }
+    draw(pts);
+
+    document.getElementById("insight").innerHTML=
+    "Regresi → banyak variabel mempengaruhi hasil";
+}
+
+</script>
+
+</body>
+</html>
