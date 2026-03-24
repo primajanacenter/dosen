@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gamifikasi Metodologi Penelitian</title>
+
+<style>
+body{font-family:Arial;text-align:center;padding:20px;}
+h1{color:#2c3e50;}
+
+.quiz-container{max-width:900px;margin:auto;}
+
+.number-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:10px;
+    margin:20px 0;
+}
+
+.number-btn{
+    padding:14px;
+    border:none;
+    border-radius:8px;
+    background:#3498db;
+    color:white;
+    cursor:pointer;
+}
+
+.number-btn.answered{background:#95a5a6;}
+
+.option{
+    margin:8px 0;
+    padding:10px;
+    border:1px solid #ccc;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.correct{background:#2ecc71;color:white;}
+.wrong{background:#e74c3c;color:white;}
+
+.explain{
+    margin-top:10px;
+    background:#f4f6f7;
+    padding:10px;
+    border-radius:5px;
+}
+
+.progress-bar{
+    width:100%;
+    height:15px;
+    background:#eee;
+    margin:10px 0;
+}
+
+.progress{height:100%;width:0%;background:#27ae60;}
+
+.footer{margin-top:40px;font-size:13px;}
+</style>
+</head>
+
+<body>
+
+<h1>🎯 Gamifikasi Metodologi (Eksperimen, Korelasi, Regresi)</h1>
+
+<div class="quiz-container">
+
+<div class="number-grid" id="grid"></div>
+
+<div id="qBox"></div>
+<div id="oBox"></div>
+<div id="explainBox"></div>
+
+<div class="progress-bar">
+<div class="progress" id="progress"></div>
+</div>
+
+<div id="scoreBox">Skor: 0</div>
+
+</div>
+
+<div class="footer">
+© 2026 Ngakan Putu Anom Harjana<br>
+anomharjana@unud.ac.id
+</div>
+
+<script>
+
+/* ===== BANK SOAL ===== */
+const Q = [
+
+{q:"Tujuan utama penelitian eksperimen adalah...",
+o:["Deskripsi","Hubungan","Kausalitas","Prediksi"],
+a:2,
+e:"Eksperimen bertujuan menemukan sebab-akibat."},
+
+{q:"Jika effect size kecil, maka sampel...",
+o:["Kecil","Sedang","Besar","Tidak berubah"],
+a:2,
+e:"Efek kecil butuh sampel besar agar terdeteksi."},
+
+{q:"RCT berarti...",
+o:["Tanpa kontrol","Randomisasi penuh","Observasi","Survey"],
+a:1,
+e:"RCT = Randomized Controlled Trial."},
+
+{q:"Quasi-experimental memiliki...",
+o:["Randomisasi penuh","Tanpa kelompok","Bias lebih tinggi","Tidak valid"],
+a:2,
+e:"Quasi rentan bias karena tidak random."},
+
+{q:"Rumus sederhana korelasi:",
+o:["n=r²","n=8/r²+3","n=50+8m","n=Z²"],
+a:1,
+e:"Rule of thumb korelasi."},
+
+{q:"Jika r=0.2, maka sampel...",
+o:["Kecil","Sedang","Besar","Tetap"],
+a:2,
+e:"r kecil → butuh sampel besar."},
+
+{q:"Regresi digunakan untuk...",
+o:["Deskripsi","Prediksi","Sampling","Randomisasi"],
+a:1,
+e:"Regresi untuk prediksi variabel."},
+
+{q:"Rule Green:",
+o:["n=10","n=50+8m","n=r²","n=Z"],
+a:1,
+e:"Rule untuk regresi."},
+
+{q:"Jika m=5 → n minimal (model)...",
+o:["55","90","100","150"],
+a:1,
+e:"50+8×5=90"},
+
+{q:"Bias pada quasi adalah...",
+o:["Sampling","Seleksi","Random","Tidak ada"],
+a:1,
+e:"Selection bias umum terjadi."},
+
+{q:"Jika SD besar maka sampel...",
+o:["Kecil","Besar","Tetap","Acak"],
+a:1,
+e:"Variasi tinggi → butuh sampel besar."},
+
+{q:"Korelasi kuat berarti...",
+o:["Titik acak","Pola jelas","Tidak ada hubungan","Cluster"],
+a:1,
+e:"Korelasi kuat = pola jelas."},
+
+{q:"Regresi multivariat berarti...",
+o:["1 variabel","2 variabel",">1 variabel","Tidak ada"],
+a:2,
+e:"Banyak variabel independen."},
+
+{q:"Alpha biasanya...",
+o:["0.5","0.05","1","10"],
+a:1,
+e:"Standar 0.05."},
+
+{q:"Power 0.8 artinya...",
+o:["20%","80%","50%","10%"],
+a:1,
+e:"Probabilitas deteksi efek."},
+
+{q:"Jika Δ besar → sampel...",
+o:["Besar","Kecil","Tetap","Acak"],
+a:1,
+e:"Efek besar mudah dideteksi."},
+
+{q:"RCT menghasilkan...",
+o:["Bias tinggi","Validitas tinggi","Tidak valid","Observasi"],
+a:1,
+e:"RCT paling kuat."},
+
+{q:"Korelasi tidak berarti...",
+o:["Hubungan","Kausalitas","Asosiasi","Nilai"],
+a:1,
+e:"Korelasi ≠ sebab-akibat."},
+
+{q:"Regresi dapat...",
+o:["Prediksi","Sampling","Randomisasi","Cluster"],
+a:0,
+e:"Digunakan untuk prediksi."},
+
+{q:"Jika r=0.5 → hubungan...",
+o:["Lemah","Sedang","Kuat","Tidak ada"],
+a:2,
+e:"r=0.5 cukup kuat."},
+
+{q:"Outlier mempengaruhi...",
+o:["Tidak","Sedikit","Besar","Tidak relevan"],
+a:2,
+e:"Outlier bisa merusak analisis."},
+
+{q:"Matching digunakan untuk...",
+o:["Random","Mengurangi bias","Menambah data","Sampling"],
+a:1,
+e:"Untuk keseimbangan kelompok."},
+
+{q:"Blinding bertujuan...",
+o:["Sampling","Bias","Random","Cluster"],
+a:1,
+e:"Menghindari bias."},
+
+{q:"Jika variabel banyak → sampel...",
+o:["Kecil","Besar","Tetap","Tidak berubah"],
+a:1,
+e:"Model kompleks butuh sampel besar."},
+
+{q:"Korelasi lemah → pola...",
+o:["Jelas","Acak","Linear","Cluster"],
+a:1,
+e:"Titik menyebar acak."}
+
+];
+
+/* ===== GAME LOGIC ===== */
+let selected=Q.sort(()=>Math.random()-0.5);
+let score=0, answered=0;
+
+function init(){
+    let grid=document.getElementById("grid");
+    selected.forEach((_,i)=>{
+        let b=document.createElement("button");
+        b.className="number-btn";
+        b.innerText=i+1;
+        b.onclick=()=>loadQ(i,b);
+        grid.appendChild(b);
+    });
+}
+
+function loadQ(i,btn){
+    if(btn.classList.contains("answered")) return;
+
+    let q=selected[i];
+    document.getElementById("qBox").innerHTML="<h3>"+q.q+"</h3>";
+
+    let opt="";
+    q.o.forEach((o,j)=>{
+        opt+=`<div class="option" onclick="check(${i},${j},this)">${o}</div>`;
+    });
+
+    document.getElementById("oBox").innerHTML=opt;
+    document.getElementById("explainBox").innerHTML="";
+}
+
+function check(i,j,el){
+    let q=selected[i];
+    let options=document.querySelectorAll(".option");
+
+    options.forEach(o=>o.style.pointerEvents="none");
+
+    if(j===q.a){
+        el.classList.add("correct");
+        score++;
+    } else {
+        el.classList.add("wrong");
+        options[q.a].classList.add("correct");
+    }
+
+    document.getElementsByClassName("number-btn")[i].classList.add("answered");
+
+    document.getElementById("explainBox").innerHTML=
+    `<div class="explain">${q.e}</div>`;
+
+    answered++;
+    document.getElementById("scoreBox").innerHTML="Skor: "+score;
+    document.getElementById("progress").style.width=(answered/25*100)+"%";
+
+    if(answered===25){
+        setTimeout(()=>{
+            let p=(score/25*100).toFixed(0);
+            document.getElementById("qBox").innerHTML=
+            `<h2>Hasil: ${score}/25 (${p}%)</h2>`;
+            document.getElementById("oBox").innerHTML="";
+        },800);
+    }
+}
+
+init();
+
+</script>
+
+</body>
+</html>
