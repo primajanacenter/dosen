@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Human Side of Surveillance</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    background: #f4fbf7;
+    color: #1c2b28;
+    line-height: 1.8;
+}
+
+/* HEADER */
+header {
+    padding: 90px 20px;
+    text-align: center;
+    background: linear-gradient(120deg, #6ecf9f, #3aa76d);
+    background-size: 200% 200%;
+    animation: gradientMove 8s ease infinite;
+    color: white;
+}
+
+header h1 {
+    font-size: 48px;
+    max-width: 800px;
+    margin: auto;
+}
+
+header p {
+    margin-top: 15px;
+    opacity: 0.9;
+}
+
+/* CONTAINER */
+.container {
+    max-width: 760px;
+    margin: auto;
+    padding: 50px 20px;
+}
+
+/* PARAGRAPH */
+p {
+    margin-bottom: 22px;
+    font-size: 17px;
+}
+
+/* SECTION */
+.section {
+    margin-bottom: 70px;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeUp 1s ease forwards;
+}
+
+/* BIG QUOTE */
+.big-quote {
+    font-size: 26px;
+    font-weight: 600;
+    margin: 60px 0;
+    padding-left: 20px;
+    border-left: 4px solid #3aa76d;
+}
+
+/* SMALL QUOTE */
+.quote {
+    font-style: italic;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 4px solid #6ecf9f;
+    margin-top: 25px;
+}
+
+/* HIGHLIGHT BOX */
+.highlight-box {
+    background: #e6f7ef;
+    padding: 25px;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    margin: 40px 0;
+}
+
+.highlight-box::before {
+    content: "";
+    position: absolute;
+    width: 120%;
+    height: 100%;
+    top: 0;
+    left: -120%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+    animation: shine 3s infinite;
+}
+
+/* NUMBER */
+.highlight-number {
+    text-align: center;
+    margin: 70px 0;
+}
+
+.highlight-number h1 {
+    font-size: 70px;
+    color: #2e7d5b;
+    margin: 0;
+}
+
+.highlight-number p {
+    margin-top: 10px;
+}
+
+/* LINK */
+.paper-link {
+    display: block;
+    text-align: center;
+    margin: 30px 0;
+    font-weight: 600;
+    color: #2e7d5b;
+    text-decoration: none;
+}
+
+.paper-link:hover {
+    text-decoration: underline;
+}
+
+/* UNDERLINE EFFECT */
+.underline {
+    position: relative;
+}
+
+.underline::after {
+    content: "";
+    position: absolute;
+    height: 6px;
+    width: 100%;
+    bottom: 2px;
+    left: 0;
+    background: rgba(110,207,159,0.3);
+    z-index: -1;
+}
+
+/* DIVIDER */
+.divider {
+    height: 1px;
+    background: #dcefe7;
+    margin: 60px 0;
+}
+
+/* FOOTER */
+footer {
+    text-align: center;
+    padding: 40px;
+    background: #3aa76d;
+    color: white;
+}
+
+/* ANIMATION */
+@keyframes fadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes gradientMove {
+    0% {background-position: 0%}
+    50% {background-position: 100%}
+    100% {background-position: 0%}
+}
+
+@keyframes shine {
+    0% {left: -120%;}
+    100% {left: 120%;}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>When Preparedness is Not Enough</h1>
+<p>The human side of disease surveillance</p>
+</header>
+
+<div class="container">
+
+<a class="paper-link" href="https://www.researchsquare.com/article/rs-9005691/v1" target="_blank">
+→ Read the full paper
+</a>
+
+<div class="section">
+
+<p>
+A healthcare worker sits in a primary health center. A patient arrives with unusual symptoms—fever, fatigue, something that does not quite fit the usual pattern.
+</p>
+
+<p>
+At that moment, the surveillance system does not act on its own. There is no automatic trigger, no invisible mechanism that guarantees action. Everything depends on a decision.
+</p>
+
+<p>
+Will the case be reported? Investigated further? Or quietly absorbed into routine care?
+</p>
+
+<div class="big-quote">
+“Surveillance systems do not fail because of data. They fail because of decisions.”
+</div>
+
+</div>
+
+<div class="section">
+
+<p>
+For years, global health discussions have focused on strengthening systems—better tools, more infrastructure, more training. These efforts matter. But they are not the whole story.
+</p>
+
+<p>
+This study reveals something deeper: preparedness alone is not enough. What determines whether surveillance works is not only what healthcare workers know—but whether they are willing to act.
+</p>
+
+<div class="highlight-box">
+Willingness is shaped by trust, experience, and human connection—not knowledge alone.
+</div>
+
+</div>
+
+<div class="highlight-number">
+<h1 id="counter">0%</h1>
+<p>of willingness explained by measurable factors</p>
+</div>
+
+<div class="section">
+
+<p>
+Even when knowledge, training, and system factors are combined, they explain only part of the story. The rest lies beyond measurement—in human behavior, perception, and context.
+</p>
+
+</div>
+
+<div class="divider"></div>
+
+<div class="section">
+
+<p>
+The strongest force is not technical capacity. It is <span class="underline">trust</span>.
+</p>
+
+<div class="big-quote">
+“When healthcare workers feel trusted by the community, they are more willing to act.”
+</div>
+
+<p>
+Surveillance, in this sense, is not merely a technical process. It is relational.
+</p>
+
+</div>
+
+<div class="section">
+
+<p>
+Knowledge remains important. Healthcare workers understand surveillance systems and recognize their importance. But knowledge alone does not guarantee action.
+</p>
+
+<div class="quote">
+“They know what to do—but that does not mean they will do it.”
+</div>
+
+<p>
+Training helps bridge this gap, transforming understanding into practice. Yet even training has limits if it is not grounded in real-world conditions.
+</p>
+
+</div>
+
+<div class="section">
+
+<p>
+Then there is the system itself. Constraints—limited resources, workload pressures, operational challenges—are often seen as barriers.
+</p>
+
+<p>
+Yet the findings suggest something unexpected: constraints do not always reduce engagement. In some cases, they strengthen it.
+</p>
+
+<div class="big-quote">
+“In imperfect systems, resilience emerges.”
+</div>
+
+<p>
+Healthcare workers adapt. They compensate. They find ways to act, even when systems fall short.
+</p>
+
+</div>
+
+<div class="divider"></div>
+
+<div class="section">
+
+<div class="highlight-box">
+A strong surveillance system is not built on infrastructure alone—it is built on trust, relationships, and human resilience.
+</div>
+
+</div>
+
+<div class="section">
+
+<p>
+If we want to strengthen surveillance, we must look beyond systems. We must understand the human conditions that shape action.
+</p>
+
+<p>
+Do healthcare workers feel supported?  
+Do they feel trusted?  
+Do they feel capable of acting?
+</p>
+
+</div>
+
+<div class="section">
+
+<div class="big-quote">
+“A resilient system is not just prepared—it is human-centered.”
+</div>
+
+</div>
+
+</div>
+
+<footer>
+<p>PUI PT Center for Public Health Innovation, Udayana University, 2026</p>
+</footer>
+
+<script>
+let count = 0;
+let target = 37.3;
+
+let counter = document.getElementById("counter");
+
+let interval = setInterval(() => {
+    if (count >= target) {
+        counter.innerHTML = target + "%";
+        clearInterval(interval);
+    } else {
+        count += 0.5;
+        counter.innerHTML = count.toFixed(1) + "%";
+    }
+}, 20);
+</script>
+
+</body>
+</html>
